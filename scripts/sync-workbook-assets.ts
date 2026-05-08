@@ -17,6 +17,7 @@ interface GeneratedTaskAsset {
   sourcePdfPageNumber: number;
   pageImageUrl: string;
   imageUrl: string;
+  strategyImageUrls: string[];
   assets: Array<Record<string, unknown>>;
 }
 
@@ -29,6 +30,7 @@ const TaskSchema = new mongoose.Schema(
     sourcePageNumber: Number,
     sourcePdfPageNumber: Number,
     pageImageUrl: String,
+    strategyImageUrls: [String],
     imageUrl: String,
     workbookAssets: [mongoose.Schema.Types.Mixed],
   },
@@ -66,6 +68,7 @@ async function main() {
           sourcePageNumber: task.sourcePageNumber,
           sourcePdfPageNumber: task.sourcePdfPageNumber,
           pageImageUrl: task.pageImageUrl,
+          strategyImageUrls: task.strategyImageUrls,
           imageUrl: task.imageUrl,
           workbookAssets: task.assets,
         },

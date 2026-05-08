@@ -49,11 +49,13 @@ const TaskSchema = new mongoose.Schema(
     sourcePageNumber: Number,
     sourcePdfPageNumber: Number,
     pageImageUrl: String,
+    strategyImageUrls: [String],
     workbookAssets: [
       {
         kind: String,
         url: String,
         page: Number,
+        order: Number,
         label: String,
         sourcePdfName: String,
         pdfPage: Number,
@@ -83,6 +85,7 @@ interface GeneratedTaskAsset {
   sourcePdfPageNumber: number;
   pageImageUrl: string;
   imageUrl: string;
+  strategyImageUrls: string[];
   assets: Array<Record<string, unknown>>;
 }
 
@@ -129,6 +132,7 @@ function withWorkbookMetadata(task: (typeof tasks)[number]) {
       sourcePageNumber: generatedAssets.sourcePageNumber,
       sourcePdfPageNumber: generatedAssets.sourcePdfPageNumber,
       pageImageUrl: generatedAssets.pageImageUrl,
+      strategyImageUrls: generatedAssets.strategyImageUrls,
       workbookAssets: generatedAssets.assets,
     };
   }
@@ -140,6 +144,7 @@ function withWorkbookMetadata(task: (typeof tasks)[number]) {
             kind: "page" as const,
             url: pageImageUrl,
             page: sourcePageNumber,
+            order: 0,
             label: `Workbook page ${sourcePageNumber}`,
             sourcePdfName,
             pdfPage: sourcePdfPageNumber,
@@ -152,6 +157,7 @@ function withWorkbookMetadata(task: (typeof tasks)[number]) {
             kind: "task" as const,
             url: taskImageUrl,
             page: sourcePageNumber,
+            order: 1,
             label: task.titleEt,
             sourcePdfName,
             pdfPage: sourcePdfPageNumber,
@@ -168,6 +174,7 @@ function withWorkbookMetadata(task: (typeof tasks)[number]) {
     sourcePageNumber,
     sourcePdfPageNumber,
     pageImageUrl,
+    strategyImageUrls: [],
     workbookAssets,
   };
 }

@@ -16,9 +16,10 @@ export interface IWorkbookCrop {
 }
 
 export interface IWorkbookAsset {
-  kind: "page" | "task" | "illustration";
+  kind: "page" | "task" | "strategy" | "illustration";
   url: string;
   page: number;
+  order: number;
   label?: string;
   sourcePdfName?: string;
   pdfPage?: number;
@@ -53,6 +54,7 @@ export interface ITask extends Document {
   sourcePageNumber?: number;
   sourcePdfPageNumber?: number;
   pageImageUrl?: string;
+  strategyImageUrls: string[];
   workbookAssets: IWorkbookAsset[];
   answer?: string;
   imageUrl?: string;
@@ -83,11 +85,12 @@ const WorkbookAssetSchema = new Schema<IWorkbookAsset>(
   {
     kind: {
       type: String,
-      enum: ["page", "task", "illustration"],
+      enum: ["page", "task", "strategy", "illustration"],
       required: true,
     },
     url: { type: String, required: true },
     page: { type: Number, required: true },
+    order: { type: Number, required: true },
     label: { type: String },
     sourcePdfName: { type: String },
     pdfPage: { type: Number },
@@ -133,6 +136,7 @@ const TaskSchema = new Schema<ITask>(
     sourcePageNumber: { type: Number },
     sourcePdfPageNumber: { type: Number },
     pageImageUrl: { type: String },
+    strategyImageUrls: { type: [String], default: [] },
     workbookAssets: { type: [WorkbookAssetSchema], default: [] },
     answer: { type: String },
     imageUrl: { type: String },

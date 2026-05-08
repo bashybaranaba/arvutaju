@@ -185,13 +185,512 @@
           "height": 1014,
           "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b"
         }
+      ],
+      "strategyPages": [
+        {
+          "kind": "strategy",
+          "page": 5,
+          "pdfPage": 8,
+          "url": "/images/workbooks/part-I/strategies/page-005.png",
+          "label": "Ülesande lahendusstrateegiaid, page 5",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "316ba6e4b45de07c31e39c38f46a5677b5a5b8230819811ea0af182a2daec235"
+        },
+        {
+          "kind": "strategy",
+          "page": 7,
+          "pdfPage": 10,
+          "url": "/images/workbooks/part-I/strategies/page-007.png",
+          "label": "Ülesande lahendusstrateegiaid, page 7",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "b046d970e4929a0a3628aade6cc03689d10e7ce04b56505e6a2c1fdcff2a124d"
+        },
+        {
+          "kind": "strategy",
+          "page": 9,
+          "pdfPage": 12,
+          "url": "/images/workbooks/part-I/strategies/page-009.png",
+          "label": "Ülesande lahendusstrateegiaid, page 9",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4175ecc8b48c29ce8b02ee8761b72ce24ef64413a8f18e5036b05712c144a422"
+        },
+        {
+          "kind": "strategy",
+          "page": 11,
+          "pdfPage": 14,
+          "url": "/images/workbooks/part-I/strategies/page-011.png",
+          "label": "Ülesande lahendusstrateegiaid, page 11",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "045cf73537020080c421fbb7b30449626fdfec53c8ec4161383eae13756d8ea7"
+        },
+        {
+          "kind": "strategy",
+          "page": 13,
+          "pdfPage": 16,
+          "url": "/images/workbooks/part-I/strategies/page-013.png",
+          "label": "Ülesande lahendusstrateegiaid, page 13",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "07f474dc3014778ccf6f558901e3583cbf86bdb79516cd61f9a0e5ed4a74d76f"
+        },
+        {
+          "kind": "strategy",
+          "page": 15,
+          "pdfPage": 18,
+          "url": "/images/workbooks/part-I/strategies/page-015.png",
+          "label": "Ülesande lahendusstrateegiaid, page 15",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "8b415c77267f9873d67b9260a99ed84056f5f4e8f19824782f699c86857e708f"
+        },
+        {
+          "kind": "strategy",
+          "page": 17,
+          "pdfPage": 20,
+          "url": "/images/workbooks/part-I/strategies/page-017.png",
+          "label": "Ülesande lahendusstrateegiaid, page 17",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "f8412a8e84a156486fde242fb34d6ce82855d3926f4e58c704888fcf1f307690"
+        },
+        {
+          "kind": "strategy",
+          "page": 19,
+          "pdfPage": 22,
+          "url": "/images/workbooks/part-I/strategies/page-019.png",
+          "label": "Ülesande lahendusstrateegiaid, page 19",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "6a163f8d0858074547c535d40f56b35209e0b2835fad211ae3a144177cef09d4"
+        },
+        {
+          "kind": "strategy",
+          "page": 22,
+          "pdfPage": 25,
+          "url": "/images/workbooks/part-I/strategies/page-022.png",
+          "label": "Ülesande lahendusstrateegiaid, page 22",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "eb7c8c91f60986979b877703d427f500e07587b71979d8a576d7e86ba2b27896"
+        },
+        {
+          "kind": "strategy",
+          "page": 24,
+          "pdfPage": 27,
+          "url": "/images/workbooks/part-I/strategies/page-024.png",
+          "label": "Ülesande lahendusstrateegiaid, page 24",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "219754133d1163aed44ce885c8500f649e1c57ab93e8509cc411b2196e92daee"
+        },
+        {
+          "kind": "strategy",
+          "page": 26,
+          "pdfPage": 29,
+          "url": "/images/workbooks/part-I/strategies/page-026.png",
+          "label": "Ülesande lahendusstrateegiaid, page 26",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "9fb44f536c9ec709164c1311b43927dcbe5f1e0cba7b9d06f3967d2dfcad316b"
+        },
+        {
+          "kind": "strategy",
+          "page": 28,
+          "pdfPage": 31,
+          "url": "/images/workbooks/part-I/strategies/page-028.png",
+          "label": "Ülesande lahendusstrateegiaid, page 28",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "84592bd4f66a8e773f367e4a66e102ed767aa6762434342f7f95a98b9cc0d546"
+        },
+        {
+          "kind": "strategy",
+          "page": 30,
+          "pdfPage": 33,
+          "url": "/images/workbooks/part-I/strategies/page-030.png",
+          "label": "Ülesande lahendusstrateegiaid, page 30",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "25bd9934338983c38cfc4ec9249dde9a2420637efd125c83207dc81ebd5d2b65"
+        },
+        {
+          "kind": "strategy",
+          "page": 33,
+          "pdfPage": 36,
+          "url": "/images/workbooks/part-I/strategies/page-033.png",
+          "label": "Ülesande lahendusstrateegiaid, page 33",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "bfab84deb2e5111efd3d4ce01c6b6c2df5fb3dc609eacb3f9d247887a3c52596"
+        },
+        {
+          "kind": "strategy",
+          "page": 35,
+          "pdfPage": 38,
+          "url": "/images/workbooks/part-I/strategies/page-035.png",
+          "label": "Ülesande lahendusstrateegiaid, page 35",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "bd822611fffef83d70aebb8977c8bbd345d0f20391e9eab4905fedf9cb2da4e7"
+        },
+        {
+          "kind": "strategy",
+          "page": 37,
+          "pdfPage": 40,
+          "url": "/images/workbooks/part-I/strategies/page-037.png",
+          "label": "Ülesande lahendusstrateegiaid, page 37",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4a8d0c58fbfd23ceef4bddeed731d93cdbf64c862f11f2fc4239271153e2ea77"
+        },
+        {
+          "kind": "strategy",
+          "page": 39,
+          "pdfPage": 42,
+          "url": "/images/workbooks/part-I/strategies/page-039.png",
+          "label": "Ülesande lahendusstrateegiaid, page 39",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "8cf73c476ae94b54833a83036e6947f4745420c75888944fe5cdfbab1c84b14d"
+        },
+        {
+          "kind": "strategy",
+          "page": 41,
+          "pdfPage": 44,
+          "url": "/images/workbooks/part-I/strategies/page-041.png",
+          "label": "Ülesande lahendusstrateegiaid, page 41",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "286dfc7a69e95e8d427a950f8285c3328ffc659277f044d72cab9d9afbfe9f1a"
+        }
       ]
     },
     "II": {
       "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal II",
       "pdfName": "Õpetaja juhendmaterjal_II.pdf",
       "pageCount": 70,
-      "pages": []
+      "pages": [],
+      "strategyPages": [
+        {
+          "kind": "strategy",
+          "page": 5,
+          "pdfPage": 6,
+          "url": "/images/workbooks/part-II/strategies/page-005.png",
+          "label": "Ülesande lahendusstrateegiaid, page 5",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "122022694f08dfad916380120247a277e1beaabe09c425a357bfef158f11d760"
+        },
+        {
+          "kind": "strategy",
+          "page": 7,
+          "pdfPage": 8,
+          "url": "/images/workbooks/part-II/strategies/page-007.png",
+          "label": "Ülesande lahendusstrateegiaid, page 7",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1b13a94583b37689a6a73f288a42ace68648747ff2b12ce050fc7a797a1105f3"
+        },
+        {
+          "kind": "strategy",
+          "page": 10,
+          "pdfPage": 11,
+          "url": "/images/workbooks/part-II/strategies/page-010.png",
+          "label": "Ülesande lahendusstrateegiaid, page 10",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "6331d22c0fe894aa4556b677115b183622290f2e271ec13ba2c26ebbfdb854d0"
+        },
+        {
+          "kind": "strategy",
+          "page": 12,
+          "pdfPage": 13,
+          "url": "/images/workbooks/part-II/strategies/page-012.png",
+          "label": "Ülesande lahendusstrateegiaid, page 12",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "cda920f394c6a820a23d855ae957f65fbe0f89085a920f79bdd92fe3c8902f2d"
+        },
+        {
+          "kind": "strategy",
+          "page": 14,
+          "pdfPage": 15,
+          "url": "/images/workbooks/part-II/strategies/page-014.png",
+          "label": "Ülesande lahendusstrateegiaid, page 14",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "bd38ac87a0bed592f7db1ff5a9187d53c1e55dfcfda648fca0c3335978900b73"
+        },
+        {
+          "kind": "strategy",
+          "page": 16,
+          "pdfPage": 17,
+          "url": "/images/workbooks/part-II/strategies/page-016.png",
+          "label": "Ülesande lahendusstrateegiaid, page 16",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1b21a8b68da54f12f73ee0e81fad36f8c96fdc6a2fb3636816f01a931360bdd5"
+        },
+        {
+          "kind": "strategy",
+          "page": 18,
+          "pdfPage": 19,
+          "url": "/images/workbooks/part-II/strategies/page-018.png",
+          "label": "Ülesande lahendusstrateegiaid, page 18",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c44241b1e383855391c7625e364d6d808a7e422c91e10d15a877fd71c5709e6b"
+        },
+        {
+          "kind": "strategy",
+          "page": 21,
+          "pdfPage": 22,
+          "url": "/images/workbooks/part-II/strategies/page-021.png",
+          "label": "Ülesande lahendusstrateegiaid, page 21",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "741aca37e30f58744759005c88b54c5ef4b5614220efd75b5a8d77b04fad99de"
+        },
+        {
+          "kind": "strategy",
+          "page": 23,
+          "pdfPage": 24,
+          "url": "/images/workbooks/part-II/strategies/page-023.png",
+          "label": "Ülesande lahendusstrateegiaid, page 23",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "458589621602e4da896f38f71b4db5510c509bc219b2a941150b85a7b9f53678"
+        },
+        {
+          "kind": "strategy",
+          "page": 25,
+          "pdfPage": 26,
+          "url": "/images/workbooks/part-II/strategies/page-025.png",
+          "label": "Ülesande lahendusstrateegiaid, page 25",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "7f6d420ed0315deaf7f8c7a620aae8e0f019785cd7ac2ab1e97c4af332bcf869"
+        },
+        {
+          "kind": "strategy",
+          "page": 27,
+          "pdfPage": 28,
+          "url": "/images/workbooks/part-II/strategies/page-027.png",
+          "label": "Ülesande lahendusstrateegiaid, page 27",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "e750ed32d5282971882705ab47b74c63746beb89af703f297ac1e60f4d91de6d"
+        },
+        {
+          "kind": "strategy",
+          "page": 29,
+          "pdfPage": 30,
+          "url": "/images/workbooks/part-II/strategies/page-029.png",
+          "label": "Ülesande lahendusstrateegiaid, page 29",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "0b8ad6478ea08e031038c29cadab8e90f80e78af7c657fd57d7fe637786e2f48"
+        },
+        {
+          "kind": "strategy",
+          "page": 31,
+          "pdfPage": 32,
+          "url": "/images/workbooks/part-II/strategies/page-031.png",
+          "label": "Ülesande lahendusstrateegiaid, page 31",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c49858e98f61320421f58229f415adf87ba7c3d827d11ce2e69b12750d8b1a81"
+        },
+        {
+          "kind": "strategy",
+          "page": 34,
+          "pdfPage": 35,
+          "url": "/images/workbooks/part-II/strategies/page-034.png",
+          "label": "Ülesande lahendusstrateegiaid, page 34",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "3479c52ded1a77e32a2c75df737277a55d8e89a52636e896fec556603d92e810"
+        },
+        {
+          "kind": "strategy",
+          "page": 36,
+          "pdfPage": 37,
+          "url": "/images/workbooks/part-II/strategies/page-036.png",
+          "label": "Ülesande lahendusstrateegiaid, page 36",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "36a3977452824ce7b70581a182bc36857e01ec3ad455dd82839c6f378789897a"
+        },
+        {
+          "kind": "strategy",
+          "page": 39,
+          "pdfPage": 40,
+          "url": "/images/workbooks/part-II/strategies/page-039.png",
+          "label": "Ülesande lahendusstrateegiaid, page 39",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "dcc5d552ab8a56fd5bd25bf222bd9c92704fd02d42fbe867b93df8edef9fa3b6"
+        },
+        {
+          "kind": "strategy",
+          "page": 41,
+          "pdfPage": 42,
+          "url": "/images/workbooks/part-II/strategies/page-041.png",
+          "label": "Ülesande lahendusstrateegiaid, page 41",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d281f491205aec2297621a945a35c03d2bd2f0823362932a70f8c5f649f5ed7a"
+        },
+        {
+          "kind": "strategy",
+          "page": 44,
+          "pdfPage": 45,
+          "url": "/images/workbooks/part-II/strategies/page-044.png",
+          "label": "Ülesande lahendusstrateegiaid, page 44",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "03760671ae018fd304cd80192d8e219b88fa7113ad96256059b7a39d6b6c984e"
+        },
+        {
+          "kind": "strategy",
+          "page": 46,
+          "pdfPage": 47,
+          "url": "/images/workbooks/part-II/strategies/page-046.png",
+          "label": "Ülesande lahendusstrateegiaid, page 46",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "e43fc28959c81a77aa1851051bb14f7fa1d6d6e8528b4c0711503220bb594bc5"
+        },
+        {
+          "kind": "strategy",
+          "page": 49,
+          "pdfPage": 50,
+          "url": "/images/workbooks/part-II/strategies/page-049.png",
+          "label": "Ülesande lahendusstrateegiaid, page 49",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "e8b23e73193d03f610f82d16552d1dab03f6881555fb75f63c22e7338c27e1ef"
+        },
+        {
+          "kind": "strategy",
+          "page": 51,
+          "pdfPage": 52,
+          "url": "/images/workbooks/part-II/strategies/page-051.png",
+          "label": "Ülesande lahendusstrateegiaid, page 51",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "6b9c8d82a4b3ffe733b2fb9133d39a074a0b30c0f4155747dade509286b9c0b1"
+        },
+        {
+          "kind": "strategy",
+          "page": 54,
+          "pdfPage": 55,
+          "url": "/images/workbooks/part-II/strategies/page-054.png",
+          "label": "Ülesande lahendusstrateegiaid, page 54",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d779ac2a40af4da9ac81246d67fac92b10df1927d09f238b23ac01d7e135f3e6"
+        },
+        {
+          "kind": "strategy",
+          "page": 56,
+          "pdfPage": 57,
+          "url": "/images/workbooks/part-II/strategies/page-056.png",
+          "label": "Ülesande lahendusstrateegiaid, page 56",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "e1494a46574a80704ac844d7bff2bd0d7c195c49a8bde3e18f1b06f4ff8fbfcb"
+        },
+        {
+          "kind": "strategy",
+          "page": 58,
+          "pdfPage": 59,
+          "url": "/images/workbooks/part-II/strategies/page-058.png",
+          "label": "Ülesande lahendusstrateegiaid, page 58",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "55ddcd632219b75700af4f9c32faedcc103e5b1c99ffde69ff6fe5bb6473614c"
+        },
+        {
+          "kind": "strategy",
+          "page": 61,
+          "pdfPage": 62,
+          "url": "/images/workbooks/part-II/strategies/page-061.png",
+          "label": "Ülesande lahendusstrateegiaid, page 61",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "ecae44b673b5fda00256092153b10b7c761c337beb722d9b2d7b3b58c619eef6"
+        },
+        {
+          "kind": "strategy",
+          "page": 63,
+          "pdfPage": 64,
+          "url": "/images/workbooks/part-II/strategies/page-063.png",
+          "label": "Ülesande lahendusstrateegiaid, page 63",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "044125779349aa09439cbf0f9d329b082cfd5f786650917c06ac02ecd431e2e9"
+        },
+        {
+          "kind": "strategy",
+          "page": 65,
+          "pdfPage": 66,
+          "url": "/images/workbooks/part-II/strategies/page-065.png",
+          "label": "Ülesande lahendusstrateegiaid, page 65",
+          "sourcePdfName": "Õpetaja juhendmaterjal_II.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "05316a6983d65d1803eddb95543a84e6a1987e99552061360e591fe0f31e0421"
+        }
+      ]
     }
   },
   "tasks": [
@@ -203,6 +702,9 @@
       "sourcePdfPageNumber": 7,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-004.png",
       "imageUrl": "/images/tasks/loendamine-tapid.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-005.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -212,29 +714,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420"
+          "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 4,
           "pdfPage": 7,
+          "order": 1,
           "url": "/images/tasks/loendamine-tapid.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 5,
+          "pdfPage": 8,
+          "url": "/images/workbooks/part-I/strategies/page-005.png",
+          "label": "Ülesande lahendusstrateegiaid, page 5",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "316ba6e4b45de07c31e39c38f46a5677b5a5b8230819811ea0af182a2daec235",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-ohupallid",
+      "slug": "loendamine-marjad",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 6,
       "sourcePdfPageNumber": 9,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-006.png",
-      "imageUrl": "/images/tasks/loendamine-ohupallid.png",
+      "imageUrl": "/images/tasks/loendamine-marjad.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-007.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -244,29 +763,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148"
+          "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 6,
           "pdfPage": 9,
-          "url": "/images/tasks/loendamine-ohupallid.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-marjad.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 7,
+          "pdfPage": 10,
+          "url": "/images/workbooks/part-I/strategies/page-007.png",
+          "label": "Ülesande lahendusstrateegiaid, page 7",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "b046d970e4929a0a3628aade6cc03689d10e7ce04b56505e6a2c1fdcff2a124d",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-tammetoud",
+      "slug": "loendamine-liblikad",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 8,
       "sourcePdfPageNumber": 11,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-008.png",
-      "imageUrl": "/images/tasks/loendamine-tammetoud.png",
+      "imageUrl": "/images/tasks/loendamine-liblikad.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-009.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -276,29 +812,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506"
+          "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 8,
           "pdfPage": 11,
-          "url": "/images/tasks/loendamine-tammetoud.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-liblikad.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 9,
+          "pdfPage": 12,
+          "url": "/images/workbooks/part-I/strategies/page-009.png",
+          "label": "Ülesande lahendusstrateegiaid, page 9",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4175ecc8b48c29ce8b02ee8761b72ce24ef64413a8f18e5036b05712c144a422",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-lilleoied",
+      "slug": "loendamine-ohupallid",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 10,
       "sourcePdfPageNumber": 13,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-010.png",
-      "imageUrl": "/images/tasks/loendamine-lilleoied.png",
+      "imageUrl": "/images/tasks/loendamine-ohupallid.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-011.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -308,29 +861,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca"
+          "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 10,
           "pdfPage": 13,
-          "url": "/images/tasks/loendamine-lilleoied.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-ohupallid.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 11,
+          "pdfPage": 14,
+          "url": "/images/workbooks/part-I/strategies/page-011.png",
+          "label": "Ülesande lahendusstrateegiaid, page 11",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "045cf73537020080c421fbb7b30449626fdfec53c8ec4161383eae13756d8ea7",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-autod",
+      "slug": "loendamine-tammetoud",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 12,
       "sourcePdfPageNumber": 15,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-012.png",
-      "imageUrl": "/images/tasks/loendamine-autod.png",
+      "imageUrl": "/images/tasks/loendamine-tammetoud.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-013.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -340,29 +910,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912"
+          "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 12,
           "pdfPage": 15,
-          "url": "/images/tasks/loendamine-autod.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-tammetoud.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 13,
+          "pdfPage": 16,
+          "url": "/images/workbooks/part-I/strategies/page-013.png",
+          "label": "Ülesande lahendusstrateegiaid, page 13",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "07f474dc3014778ccf6f558901e3583cbf86bdb79516cd61f9a0e5ed4a74d76f",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-avokaadod",
+      "slug": "loendamine-lilleoied",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 14,
       "sourcePdfPageNumber": 17,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-014.png",
-      "imageUrl": "/images/tasks/loendamine-avokaadod.png",
+      "imageUrl": "/images/tasks/loendamine-lilleoied.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-015.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -372,29 +959,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba"
+          "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 14,
           "pdfPage": 17,
-          "url": "/images/tasks/loendamine-avokaadod.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-lilleoied.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 15,
+          "pdfPage": 18,
+          "url": "/images/workbooks/part-I/strategies/page-015.png",
+          "label": "Ülesande lahendusstrateegiaid, page 15",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "8b415c77267f9873d67b9260a99ed84056f5f4e8f19824782f699c86857e708f",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-marjad",
+      "slug": "loendamine-autod",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 16,
       "sourcePdfPageNumber": 19,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-016.png",
-      "imageUrl": "/images/tasks/loendamine-marjad.png",
+      "imageUrl": "/images/tasks/loendamine-autod.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-017.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -404,29 +1008,46 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5"
+          "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 16,
           "pdfPage": 19,
-          "url": "/images/tasks/loendamine-marjad.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-autod.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 17,
+          "pdfPage": 20,
+          "url": "/images/workbooks/part-I/strategies/page-017.png",
+          "label": "Ülesande lahendusstrateegiaid, page 17",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "f8412a8e84a156486fde242fb34d6ce82855d3926f4e58c704888fcf1f307690",
+          "order": 2
         }
       ]
     },
     {
-      "slug": "loendamine-liblikad",
+      "slug": "loendamine-avokaadod",
       "workbookPart": "I",
       "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
       "sourcePageNumber": 18,
       "sourcePdfPageNumber": 21,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-018.png",
-      "imageUrl": "/images/tasks/loendamine-liblikad.png",
+      "imageUrl": "/images/tasks/loendamine-avokaadod.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-019.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -436,18 +1057,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2"
+          "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 18,
           "pdfPage": 21,
-          "url": "/images/tasks/loendamine-liblikad.png",
+          "order": 1,
+          "url": "/images/tasks/loendamine-avokaadod.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 19,
+          "pdfPage": 22,
+          "url": "/images/workbooks/part-I/strategies/page-019.png",
+          "label": "Ülesande lahendusstrateegiaid, page 19",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "6a163f8d0858074547c535d40f56b35209e0b2835fad211ae3a144177cef09d4",
+          "order": 2
         }
       ]
     },
@@ -459,6 +1094,9 @@
       "sourcePdfPageNumber": 24,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-021.png",
       "imageUrl": "/images/tasks/liitmine-7-plus-6.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-022.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -468,18 +1106,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2"
+          "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 21,
           "pdfPage": 24,
+          "order": 1,
           "url": "/images/tasks/liitmine-7-plus-6.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 22,
+          "pdfPage": 25,
+          "url": "/images/workbooks/part-I/strategies/page-022.png",
+          "label": "Ülesande lahendusstrateegiaid, page 22",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "eb7c8c91f60986979b877703d427f500e07587b71979d8a576d7e86ba2b27896",
+          "order": 2
         }
       ]
     },
@@ -491,6 +1143,9 @@
       "sourcePdfPageNumber": 26,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-023.png",
       "imageUrl": "/images/tasks/liitmine-12-plus-17.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-024.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -500,18 +1155,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b"
+          "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 23,
           "pdfPage": 26,
+          "order": 1,
           "url": "/images/tasks/liitmine-12-plus-17.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 24,
+          "pdfPage": 27,
+          "url": "/images/workbooks/part-I/strategies/page-024.png",
+          "label": "Ülesande lahendusstrateegiaid, page 24",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "219754133d1163aed44ce885c8500f649e1c57ab93e8509cc411b2196e92daee",
+          "order": 2
         }
       ]
     },
@@ -523,6 +1192,9 @@
       "sourcePdfPageNumber": 28,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-025.png",
       "imageUrl": "/images/tasks/liitmine-27-plus-35.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-026.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -532,18 +1204,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509"
+          "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 25,
           "pdfPage": 28,
+          "order": 1,
           "url": "/images/tasks/liitmine-27-plus-35.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 26,
+          "pdfPage": 29,
+          "url": "/images/workbooks/part-I/strategies/page-026.png",
+          "label": "Ülesande lahendusstrateegiaid, page 26",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "9fb44f536c9ec709164c1311b43927dcbe5f1e0cba7b9d06f3967d2dfcad316b",
+          "order": 2
         }
       ]
     },
@@ -555,6 +1241,9 @@
       "sourcePdfPageNumber": 30,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-027.png",
       "imageUrl": "/images/tasks/liitmine-349-plus-36.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-028.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -564,18 +1253,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768"
+          "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 27,
           "pdfPage": 30,
+          "order": 1,
           "url": "/images/tasks/liitmine-349-plus-36.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 28,
+          "pdfPage": 31,
+          "url": "/images/workbooks/part-I/strategies/page-028.png",
+          "label": "Ülesande lahendusstrateegiaid, page 28",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "84592bd4f66a8e773f367e4a66e102ed767aa6762434342f7f95a98b9cc0d546",
+          "order": 2
         }
       ]
     },
@@ -587,6 +1290,9 @@
       "sourcePdfPageNumber": 32,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-029.png",
       "imageUrl": "/images/tasks/liitmine-349-plus-156.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-030.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -596,18 +1302,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0"
+          "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 29,
           "pdfPage": 32,
+          "order": 1,
           "url": "/images/tasks/liitmine-349-plus-156.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 30,
+          "pdfPage": 33,
+          "url": "/images/workbooks/part-I/strategies/page-030.png",
+          "label": "Ülesande lahendusstrateegiaid, page 30",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "25bd9934338983c38cfc4ec9249dde9a2420637efd125c83207dc81ebd5d2b65",
+          "order": 2
         }
       ]
     },
@@ -619,6 +1339,9 @@
       "sourcePdfPageNumber": 35,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-032.png",
       "imageUrl": "/images/tasks/lahutamine-19-miinus-6.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-033.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -628,18 +1351,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70"
+          "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 32,
           "pdfPage": 35,
+          "order": 1,
           "url": "/images/tasks/lahutamine-19-miinus-6.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 33,
+          "pdfPage": 36,
+          "url": "/images/workbooks/part-I/strategies/page-033.png",
+          "label": "Ülesande lahendusstrateegiaid, page 33",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "bfab84deb2e5111efd3d4ce01c6b6c2df5fb3dc609eacb3f9d247887a3c52596",
+          "order": 2
         }
       ]
     },
@@ -651,6 +1388,9 @@
       "sourcePdfPageNumber": 37,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-034.png",
       "imageUrl": "/images/tasks/lahutamine-47-miinus-20.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-035.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -660,18 +1400,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7"
+          "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 34,
           "pdfPage": 37,
+          "order": 1,
           "url": "/images/tasks/lahutamine-47-miinus-20.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 35,
+          "pdfPage": 38,
+          "url": "/images/workbooks/part-I/strategies/page-035.png",
+          "label": "Ülesande lahendusstrateegiaid, page 35",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "bd822611fffef83d70aebb8977c8bbd345d0f20391e9eab4905fedf9cb2da4e7",
+          "order": 2
         }
       ]
     },
@@ -683,6 +1437,9 @@
       "sourcePdfPageNumber": 39,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-036.png",
       "imageUrl": "/images/tasks/lahutamine-56-miinus-8.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-037.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -692,18 +1449,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66"
+          "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 36,
           "pdfPage": 39,
+          "order": 1,
           "url": "/images/tasks/lahutamine-56-miinus-8.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 37,
+          "pdfPage": 40,
+          "url": "/images/workbooks/part-I/strategies/page-037.png",
+          "label": "Ülesande lahendusstrateegiaid, page 37",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4a8d0c58fbfd23ceef4bddeed731d93cdbf64c862f11f2fc4239271153e2ea77",
+          "order": 2
         }
       ]
     },
@@ -715,6 +1486,9 @@
       "sourcePdfPageNumber": 41,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-038.png",
       "imageUrl": "/images/tasks/lahutamine-35-miinus-19.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-039.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -724,18 +1498,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f"
+          "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 38,
           "pdfPage": 41,
+          "order": 1,
           "url": "/images/tasks/lahutamine-35-miinus-19.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 39,
+          "pdfPage": 42,
+          "url": "/images/workbooks/part-I/strategies/page-039.png",
+          "label": "Ülesande lahendusstrateegiaid, page 39",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "8cf73c476ae94b54833a83036e6947f4745420c75888944fe5cdfbab1c84b14d",
+          "order": 2
         }
       ]
     },
@@ -747,6 +1535,9 @@
       "sourcePdfPageNumber": 43,
       "pageImageUrl": "/images/workbooks/part-I/pages/page-040.png",
       "imageUrl": "/images/tasks/lahutamine-764-miinus-321.png",
+      "strategyImageUrls": [
+        "/images/workbooks/part-I/strategies/page-041.png"
+      ],
       "assets": [
         {
           "kind": "page",
@@ -756,18 +1547,32 @@
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
-          "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b"
+          "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b",
+          "order": 0
         },
         {
           "kind": "task",
           "page": 40,
           "pdfPage": 43,
+          "order": 1,
           "url": "/images/tasks/lahutamine-764-miinus-321.png",
           "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
           "width": 1800,
           "height": 1014,
           "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b",
           "crop": null
+        },
+        {
+          "kind": "strategy",
+          "page": 41,
+          "pdfPage": 44,
+          "url": "/images/workbooks/part-I/strategies/page-041.png",
+          "label": "Ülesande lahendusstrateegiaid, page 41",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "286dfc7a69e95e8d427a950f8285c3328ffc659277f044d72cab9d9afbfe9f1a",
+          "order": 2
         }
       ]
     }

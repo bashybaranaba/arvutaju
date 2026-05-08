@@ -5,6 +5,7 @@ Render workbook source PDFs into queryable app assets.
 This script creates:
 - full-page PNG renders under public/images/workbooks/part-*/pages/
 - per-task PNGs under public/images/tasks/
+- per-strategy-page PNGs under public/images/workbooks/part-*/strategies/
 - public/images/workbooks/manifest.generated.json with dimensions/checksums
 
 Per-task images use the optional "crop" box from scripts/workbook-assets.json.
@@ -12,6 +13,7 @@ The manifest keeps both printed workbook page numbers and physical PDF page
 numbers. Crop values are PDF points from the top-left of the physical PDF page.
 If no crop is present, the task image falls back to the full source page so
 every DB task still has a real workbook image and an exact page reference.
+Strategy page images are the source pages headed "Ülesande lahendusstrateegiaid".
 """
 
 from __future__ import annotations
@@ -93,6 +95,13 @@ def render_task_image(
     }
 
 
+def sort_strategy_pages(strategy_pages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        strategy_pages,
+        key=lambda page: (page.get("page", 0), page.get("pdfPage", page.get("page", 0))),
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
@@ -127,7 +136,27 @@ def main() -> int:
                 for task in tasks
             }
         )
+        strategy_pages_needed = sorted(
+            {
+                (
+                    strategy_page["workbookPart"],
+                    strategy_page["page"],
+                    strategy_page.get("pdfPage", strategy_page["page"]),
+                )
+                for strategy_page in config.get("strategyPages", [])
+            }
+            | {
+                (
+                    task["workbookPart"],
+                    strategy_page["page"],
+                    strategy_page.get("pdfPage", strategy_page["page"]),
+                )
+                for task in tasks
+                for strategy_page in task.get("strategyPages", [])
+            }
+        )
         page_assets: dict[tuple[str, int], dict[str, Any]] = {}
+        strategy_assets: dict[tuple[str, int], dict[str, Any]] = {}
 
         for part, printed_page, pdf_page in pages_needed:
             workbook = workbooks[part]
@@ -144,13 +173,55 @@ def main() -> int:
             page_assets[(part, printed_page)] = asset
             generated["workbooks"][part]["pages"].append(asset)
 
+        for part, printed_page, pdf_page in strategy_pages_needed:
+            workbook = workbooks[part]
+            out_path = ROOT / workbook["outputDir"] / "strategies" / page_name(printed_page)
+            meta = render_page(docs[part], pdf_page, out_path, args.dpi)
+            asset = {
+                "kind": "strategy",
+                "page": printed_page,
+                "pdfPage": pdf_page,
+                "url": public_url(out_path),
+                "label": f"Ülesande lahendusstrateegiaid, page {printed_page}",
+                "sourcePdfName": workbook["pdfName"],
+                **meta,
+            }
+            strategy_assets[(part, printed_page)] = asset
+            generated["workbooks"][part].setdefault("strategyPages", []).append(asset)
+
         for task in tasks:
             part = task["workbookPart"]
             workbook = workbooks[part]
             printed_page = task["page"]
             pdf_page = task.get("pdfPage", printed_page)
+            task_strategy_assets = [
+                strategy_assets[(part, strategy_page["page"])]
+                for strategy_page in sort_strategy_pages(task.get("strategyPages", []))
+            ]
             out_path = TASK_IMAGE_DIR / f"{task['slug']}.png"
             meta = render_task_image(docs[part], pdf_page, task, out_path, args.dpi)
+            ordered_assets = [
+                {
+                    **page_assets[(part, printed_page)],
+                    "order": 0,
+                },
+                {
+                    "kind": "task",
+                    "page": printed_page,
+                    "pdfPage": pdf_page,
+                    "order": 1,
+                    "url": public_url(out_path),
+                    "sourcePdfName": workbook["pdfName"],
+                    **meta,
+                },
+                *[
+                    {
+                        **asset,
+                        "order": index + 2,
+                    }
+                    for index, asset in enumerate(task_strategy_assets)
+                ],
+            ]
             generated["tasks"].append(
                 {
                     "slug": task["slug"],
@@ -160,17 +231,8 @@ def main() -> int:
                     "sourcePdfPageNumber": pdf_page,
                     "pageImageUrl": page_assets[(part, printed_page)]["url"],
                     "imageUrl": public_url(out_path),
-                    "assets": [
-                        page_assets[(part, printed_page)],
-                        {
-                            "kind": "task",
-                            "page": printed_page,
-                            "pdfPage": pdf_page,
-                            "url": public_url(out_path),
-                            "sourcePdfName": workbook["pdfName"],
-                            **meta,
-                        },
-                    ],
+                    "strategyImageUrls": [asset["url"] for asset in ordered_assets if asset["kind"] == "strategy"],
+                    "assets": ordered_assets,
                 }
             )
     finally:
@@ -181,7 +243,10 @@ def main() -> int:
     out_manifest.parent.mkdir(parents=True, exist_ok=True)
     out_manifest.write_text(json.dumps(generated, ensure_ascii=False, indent=2) + "\n")
     print(f"Wrote {out_manifest}")
-    print(f"Rendered {len(pages_needed)} pages and {len(tasks)} task images")
+    print(
+        f"Rendered {len(pages_needed)} task pages, "
+        f"{len(strategy_pages_needed)} strategy pages, and {len(tasks)} task images"
+    )
     return 0
 
 

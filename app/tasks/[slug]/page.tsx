@@ -15,6 +15,16 @@ interface Strategy {
   example?: string;
 }
 
+interface WorkbookAsset {
+  kind: "page" | "task" | "strategy" | "illustration";
+  url: string;
+  page: number;
+  order?: number;
+  label?: string;
+  sourcePdfName?: string;
+  pdfPage?: number;
+}
+
 interface Task {
   _id: string;
   slug: string;
@@ -41,6 +51,8 @@ interface Task {
   sourcePageNumber?: number;
   sourcePdfPageNumber?: number;
   pageImageUrl?: string;
+  strategyImageUrls?: string[];
+  workbookAssets?: WorkbookAsset[];
   imageUrl?: string;
 }
 
@@ -92,6 +104,33 @@ function getMessageImage(content: ChatMessage["content"]): string | null {
   if (typeof content === "string") return null;
   const img = content.find((p) => p.type === "image_url");
   return img?.image_url?.url ?? null;
+}
+
+function sortPageUrls(urls: string[] | undefined): string[] {
+  return [...(urls ?? [])].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function orderedWorkbookAssets(task: Task | null): WorkbookAsset[] {
+  return [...(task?.workbookAssets ?? [])].sort((a, b) => {
+    const orderDiff = (a.order ?? 999) - (b.order ?? 999);
+    if (orderDiff !== 0) return orderDiff;
+    return a.url.localeCompare(b.url, undefined, { numeric: true });
+  });
+}
+
+function taskImageUrl(task: Task | null): string | undefined {
+  if (!task) return undefined;
+  return orderedWorkbookAssets(task).find((asset) => asset.kind === "task")?.url
+    ?? task.imageUrl
+    ?? task.pageImageUrl;
+}
+
+function strategyImageUrls(task: Task | null): string[] {
+  const assetUrls = orderedWorkbookAssets(task)
+    .filter((asset) => asset.kind === "strategy")
+    .map((asset) => asset.url);
+
+  return assetUrls.length > 0 ? assetUrls : sortPageUrls(task?.strategyImageUrls);
 }
 
 function TaskPageInner({ slug }: { slug: string }) {
@@ -273,7 +312,8 @@ function TaskPageInner({ slug }: { slug: string }) {
           "How do I respond to wrong answers?",
           "What is the compensation strategy?",
         ];
-  const primaryWorkbookImage = task.imageUrl ?? task.pageImageUrl;
+  const primaryWorkbookImage = taskImageUrl(task);
+  const workbookStrategyImages = strategyImageUrls(task);
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col">
@@ -443,6 +483,28 @@ function TaskPageInner({ slug }: { slug: string }) {
             <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">
               {isEt ? "Strateegiad" : "Strategies"}
             </h2>
+            {workbookStrategyImages.length > 0 && (
+              <div className="mb-3 space-y-3">
+                {workbookStrategyImages.map((url, index) => (
+                  <div
+                    key={`${url}-${index}`}
+                    className="bg-white border border-zinc-200 rounded-2xl overflow-hidden"
+                  >
+                    <div className="px-5 py-3 border-b border-zinc-100">
+                      <p className="text-sm font-semibold text-zinc-900">
+                        {isEt ? "Töövihiku lahendusstrateegiate leht" : "Workbook strategy page"}
+                      </p>
+                    </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={isEt ? "Ülesande lahendusstrateegiad" : "Task solution strategies"}
+                      className="w-full object-contain bg-zinc-50"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="space-y-2">
               {task.strategies.map((strategy, i) => (
                 <div

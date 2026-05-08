@@ -11,6 +11,16 @@ interface Strategy {
   example?: string;
 }
 
+interface WorkbookAsset {
+  kind: "page" | "task" | "strategy" | "illustration";
+  url: string;
+  page: number;
+  order?: number;
+  label?: string;
+  sourcePdfName?: string;
+  pdfPage?: number;
+}
+
 interface Task {
   _id: string;
   slug: string;
@@ -37,6 +47,8 @@ interface Task {
   sourcePageNumber?: number;
   sourcePdfPageNumber?: number;
   pageImageUrl?: string;
+  strategyImageUrls?: string[];
+  workbookAssets?: WorkbookAsset[];
   imageUrl?: string;
 }
 
@@ -56,6 +68,32 @@ const DIFFICULTY_LABELS: Record<string, { et: string; en: string; className: str
 
 function taskPage(task: Task): number | undefined {
   return task.sourcePageNumber ?? task.pageRef;
+}
+
+function sortPageUrls(urls: string[] | undefined): string[] {
+  return [...(urls ?? [])].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+function orderedWorkbookAssets(task: Task | null): WorkbookAsset[] {
+  return [...(task?.workbookAssets ?? [])].sort((a, b) => {
+    const orderDiff = (a.order ?? 999) - (b.order ?? 999);
+    if (orderDiff !== 0) return orderDiff;
+    return a.url.localeCompare(b.url, undefined, { numeric: true });
+  });
+}
+
+function taskImageUrl(task: Task): string | undefined {
+  return orderedWorkbookAssets(task).find((asset) => asset.kind === "task")?.url
+    ?? task.imageUrl
+    ?? task.pageImageUrl;
+}
+
+function strategyImageUrls(task: Task | null): string[] {
+  const assetUrls = orderedWorkbookAssets(task)
+    .filter((asset) => asset.kind === "strategy")
+    .map((asset) => asset.url);
+
+  return assetUrls.length > 0 ? assetUrls : sortPageUrls(task?.strategyImageUrls);
 }
 
 export default function WorkbookPage() {
@@ -258,10 +296,10 @@ export default function WorkbookPage() {
 
               <div className="rounded-lg border border-zinc-200 bg-white overflow-hidden">
                 <div className="bg-zinc-100 flex items-center justify-center min-h-[22rem]">
-                  {selectedTask.imageUrl || selectedTask.pageImageUrl ? (
+                  {taskImageUrl(selectedTask) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={selectedTask.imageUrl ?? selectedTask.pageImageUrl}
+                      src={taskImageUrl(selectedTask)}
                       alt={isEt ? selectedTask.problemEt : selectedTask.problem}
                       className="w-full max-h-[72vh] object-contain"
                     />
@@ -326,7 +364,34 @@ export default function WorkbookPage() {
 
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">
-                  {isEt ? "Strateegiad" : "Strategies"}
+                  {isEt ? "Töövihiku strateegialeht" : "Workbook Strategy Page"}
+                </h3>
+                {strategyImageUrls(selectedTask).length > 0 ? (
+                  <div className="space-y-2 mb-4">
+                    {strategyImageUrls(selectedTask).map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="bg-white border border-zinc-200 rounded-lg overflow-hidden"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt={isEt ? "Ülesande lahendusstrateegiad" : "Task solution strategies"}
+                          className="w-full object-contain bg-zinc-50"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="bg-white border border-zinc-200 rounded-lg p-3 mb-4 text-sm text-zinc-500">
+                    {isEt ? "Strateegialeht puudub." : "Strategy page missing."}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-2">
+                  {isEt ? "Andmebaasi strateegiad" : "Database Strategies"}
                 </h3>
                 <div className="space-y-2">
                   {selectedTask.strategies.map((strategy) => (
