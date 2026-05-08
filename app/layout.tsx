@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Arvutaju",
-  description: "Mõtlemine nähtavaks! õpetaja abiline",
+  description:
+    "Õpetaja tööriist arvutaju, paindlike strateegiate ja matemaatilise arutelu toetamiseks.",
 };
 
 export default function RootLayout({
@@ -12,7 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="et" className="h-full antialiased">
+    <html
+      lang="et"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
