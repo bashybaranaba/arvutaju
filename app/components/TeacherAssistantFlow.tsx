@@ -148,6 +148,8 @@ const copyByLang: Record<Language, Copy> = {
   },
 };
 
+const MAX_RETRIEVED_TASKS = 8;
+
 export default function TeacherAssistantFlow({
   lang,
   initialPrompt = "",
@@ -182,7 +184,7 @@ export default function TeacherAssistantFlow({
       if (!response.ok) return [];
       const data = await response.json();
       setRetrieval(data.retrieval ?? { mode: data.source ?? "unknown", count: data.tasks?.length ?? 0 });
-      return (data.tasks ?? []).slice(0, 4);
+      return (data.tasks ?? []).slice(0, MAX_RETRIEVED_TASKS);
     } catch {
       return [];
     }
@@ -218,7 +220,9 @@ export default function TeacherAssistantFlow({
         body: JSON.stringify({
           messages: nextMessages,
           taskSlug: contextTask?.slug,
-          contextTasks: contextTasks.length > 0 ? contextTasks.slice(0, 4) : tasks.slice(0, 4),
+          contextTasks: contextTasks.length > 0
+            ? contextTasks.slice(0, MAX_RETRIEVED_TASKS)
+            : tasks.slice(0, MAX_RETRIEVED_TASKS),
           lang,
         }),
       });
@@ -368,6 +372,38 @@ export default function TeacherAssistantFlow({
               <p className="mt-3 text-sm font-medium text-[#7c63d8]">
                 {isSearching ? copy.searching : copy.thinking}
               </p>
+            )}
+
+            {tasks.length > 0 && (
+              <div className="mt-3 border-t border-[#eadfd4] pt-3">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#7c63d8]">
+                  {isEt ? "Leitud töövihiku ülesanded" : "Retrieved workbook tasks"}
+                </p>
+                <div className="space-y-1.5">
+                  {tasks.map((task) => (
+                    <button
+                      key={task._id}
+                      type="button"
+                      onClick={() => setSelectedTask(task)}
+                      className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
+                        selectedTask?._id === task._id
+                          ? "border-[#7c63d8] bg-[#f7f3ff]"
+                          : "border-[#eadfd4] bg-white hover:border-[#b09cf0]"
+                      }`}
+                    >
+                      <span className="line-clamp-1 block text-xs font-semibold text-[#1b1b1f]">
+                        {isEt ? task.titleEt : task.title}
+                      </span>
+                      <span className="mt-0.5 line-clamp-2 block text-[0.7rem] leading-4 text-[#6c665f]">
+                        {isEt ? task.problemEt : task.problem}
+                      </span>
+                      <span className="mt-1 block text-[0.68rem] font-medium text-[#7c63d8]">
+                        {pageLabel(task, isEt)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 
