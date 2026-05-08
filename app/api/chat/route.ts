@@ -4,7 +4,72 @@ import { connectToDatabase } from "@/lib/mongoose";
 import Task from "@/lib/models/Task";
 import { ITask } from "@/lib/models/Task";
 
-function buildSystemPrompt(task: ITask | null, lang: string): string {
+type RetrievedTaskContext = {
+  slug: string;
+  title?: string;
+  titleEt?: string;
+  problem?: string;
+  problemEt?: string;
+  chapter?: string;
+  operation?: string;
+  gradeMin?: number;
+  gradeMax?: number;
+  difficulty?: string;
+  pageRef?: number;
+  workbookPart?: string;
+  sourcePageNumber?: number;
+  score?: number;
+  strategies?: Array<{
+    name?: string;
+    nameEt?: string;
+    description?: string;
+    descriptionEt?: string;
+    example?: string;
+  }>;
+  commonMisconceptions?: string[];
+  commonMisconceptionsEt?: string[];
+  facilitation?: string;
+  facilitationEt?: string;
+};
+
+function formatRetrievedContext(contextTasks: RetrievedTaskContext[], isEt: boolean) {
+  if (contextTasks.length === 0) return "";
+
+  return contextTasks
+    .slice(0, 4)
+    .map((task, index) => {
+      const strategies = (task.strategies ?? [])
+        .slice(0, 4)
+        .map((strategy) => isEt ? strategy.nameEt ?? strategy.name : strategy.name ?? strategy.nameEt)
+        .filter(Boolean)
+        .join(", ");
+      const misconceptionList = isEt
+        ? task.commonMisconceptionsEt ?? task.commonMisconceptions ?? []
+        : task.commonMisconceptions ?? task.commonMisconceptionsEt ?? [];
+      const misconceptions = misconceptionList
+        ?.slice(0, 3)
+        .join("; ");
+
+      return [
+        `${index + 1}. ${isEt ? task.titleEt ?? task.title : task.title ?? task.titleEt}`,
+        `Problem: ${isEt ? task.problemEt ?? task.problem : task.problem ?? task.problemEt}`,
+        `Workbook reference: ${task.workbookPart ? `Part ${task.workbookPart}, ` : ""}page ${task.sourcePageNumber ?? task.pageRef ?? "unknown"}`,
+        `Operation/grades/difficulty: ${task.operation ?? task.chapter ?? "unknown"}, ${task.gradeMin ?? "?"}-${task.gradeMax ?? "?"}, ${task.difficulty ?? "unknown"}`,
+        strategies ? `Strategies: ${strategies}` : "",
+        misconceptions ? `Misconceptions: ${misconceptions}` : "",
+        typeof task.score === "number" ? `Retrieval score: ${task.score.toFixed(3)}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+    })
+    .join("\n\n");
+}
+
+function buildSystemPrompt(
+  task: ITask | null,
+  lang: string,
+  retrievedContext: RetrievedTaskContext[] = [],
+): string {
   const isEt = lang === "et";
 
   const base = isEt
@@ -32,7 +97,13 @@ Your role is to help teachers:
 
 Respond in the same language as the teacher's question (Estonian or English).`;
 
-  if (!task) return base;
+  const retrievedContextText = formatRetrievedContext(retrievedContext, isEt);
+
+  const retrievalInstructions = retrievedContextText
+    ? `\n\n---\n**Retrieved workbook examples visible in the workspace:**\n${retrievedContextText}\n---\n\nUse these retrieved workbook examples as the main evidence. If several examples are shown, compare them briefly and explain why the selected one is most relevant. Refer to visible examples by title/page when useful. Never answer as if no workbook context exists when retrieved examples are provided.`
+    : "";
+
+  if (!task) return `${base}${retrievalInstructions}`;
 
   const isCountingTask = task.chapter === "counting";
 
@@ -79,15 +150,16 @@ Accuracy rules:
 - If the teacher asks for new similar content, generate text tasks and teacher moves, but say that strategy images should be reused from the verified workbook source or produced by a deterministic renderer.
 - Keep answers concise enough for classroom planning.
 Number Talk response shape:
+- Use short markdown with bold section labels.
 - Give the teacher a concrete next move first.
 - Name 2-3 likely student strategies or misconceptions from the workbook context.
 - Offer 2-3 discussion questions that invite explanation, comparison, and justification.
-- When helpful, suggest how the teacher can record the step-by-step thinking on the board without privileging one method as the only correct method.`;
+- When helpful, suggest how the teacher can record the step-by-step thinking on the board without privileging one method as the only correct method.${retrievalInstructions}`;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, taskSlug, lang = "et" } = await request.json();
+    const { messages, taskSlug, lang = "et", contextTasks = [] } = await request.json();
 
     let task: ITask | null = null;
     if (taskSlug) {
@@ -95,7 +167,7 @@ export async function POST(request: NextRequest) {
       task = await Task.findOne({ slug: taskSlug }).lean() as ITask | null;
     }
 
-    const systemPrompt = buildSystemPrompt(task, lang);
+    const systemPrompt = buildSystemPrompt(task, lang, contextTasks);
 
     // messages may contain content as string (text-only) or array (text+image_url for vision)
     // gpt-4o handles both formats natively

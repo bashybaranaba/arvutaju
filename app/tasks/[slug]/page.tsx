@@ -32,7 +32,7 @@ interface Task {
   titleEt: string;
   problem: string;
   problemEt: string;
-  chapter: "counting" | "addition" | "subtraction";
+  chapter: "counting" | "addition" | "subtraction" | "multiplication" | "division";
   chapterOrder: number;
   operation: string;
   gradeMin: number;
@@ -77,6 +77,14 @@ const DIFFICULTY_LABELS: Record<string, { et: string; en: string }> = {
   easy: { et: "Lihtne", en: "Easy" },
   medium: { et: "Keskmine", en: "Medium" },
   hard: { et: "Raske", en: "Hard" },
+};
+
+const CHAPTER_LABELS: Record<Task["chapter"], { et: string; en: string }> = {
+  counting: { et: "Loendamine", en: "Counting" },
+  addition: { et: "Liitmine", en: "Addition" },
+  subtraction: { et: "Lahutamine", en: "Subtraction" },
+  multiplication: { et: "Korrutamine", en: "Multiplication" },
+  division: { et: "Jagamine", en: "Division" },
 };
 
 async function uploadToCloudinary(file: File): Promise<string> {
@@ -283,11 +291,7 @@ function TaskPageInner({ slug }: { slug: string }) {
   }
 
   const isCounting = task.chapter === "counting";
-  const chapterLabel = {
-    counting: { et: "Loendamine", en: "Counting" },
-    addition: { et: "Liitmine", en: "Addition" },
-    subtraction: { et: "Lahutamine", en: "Subtraction" },
-  }[task.chapter];
+  const chapterLabel = CHAPTER_LABELS[task.chapter];
 
   const suggestedPrompts = isEt
     ? isCounting

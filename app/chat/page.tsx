@@ -31,7 +31,7 @@ export default async function ChatPage({
             href={lang === "en" ? "/?lang=en" : "/"}
             className="flex items-baseline text-2xl font-black leading-none tracking-[-0.04em] sm:text-[1.7rem]"
             style={logoFontStyle}
-            aria-label={isEt ? "Arvutaju avaleht" : "Arvutaju home"}
+            aria-label="Arvutaju avaleht"
           >
             <span className="text-[#1b1b1f]">arvu</span>
             <span className="-mx-0.5 translate-y-[0.02em] text-[#fc6513]">+</span>

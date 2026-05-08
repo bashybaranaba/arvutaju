@@ -120,7 +120,7 @@ const landingCopy = {
   },
   en: {
     navLabel: "Primary navigation",
-    homeLabel: "Arvutaju home",
+    homeLabel: "Arvutaju avaleht",
     languageLabel: "Language selection",
     methodology: "Principles",
     samples: "Workflow",
