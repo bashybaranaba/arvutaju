@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import mongoose from "mongoose";
 import OpenAI from "openai";
 import { tasks } from "./seed-data";
@@ -41,12 +43,141 @@ const TaskSchema = new mongoose.Schema(
     commonMisconceptionsEt: [String],
     tags: [String],
     pageRef: Number,
+    workbookPart: String,
+    workbookTitle: String,
+    sourcePdfName: String,
+    sourcePageNumber: Number,
+    sourcePdfPageNumber: Number,
+    pageImageUrl: String,
+    strategyImageUrls: [String],
+    workbookAssets: [
+      {
+        kind: String,
+        url: String,
+        page: Number,
+        order: Number,
+        label: String,
+        sourcePdfName: String,
+        pdfPage: Number,
+        crop: {
+          x: Number,
+          y: Number,
+          width: Number,
+          height: Number,
+        },
+        width: Number,
+        height: Number,
+        checksum: String,
+      },
+    ],
     answer: String,
     imageUrl: String,
     embedding: [Number],
   },
   { timestamps: true }
 );
+
+interface GeneratedTaskAsset {
+  slug: string;
+  workbookPart: "I" | "II";
+  sourcePdfName: string;
+  sourcePageNumber: number;
+  sourcePdfPageNumber: number;
+  pageImageUrl: string;
+  imageUrl: string;
+  strategyImageUrls: string[];
+  assets: Array<Record<string, unknown>>;
+}
+
+function loadGeneratedAssets(): Map<string, GeneratedTaskAsset> {
+  const manifestPath = path.join(
+    process.cwd(),
+    "public/images/workbooks/manifest.generated.json"
+  );
+
+  if (!existsSync(manifestPath)) return new Map();
+
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+    tasks?: GeneratedTaskAsset[];
+  };
+
+  return new Map((manifest.tasks ?? []).map((task) => [task.slug, task]));
+}
+
+const generatedAssetsBySlug = loadGeneratedAssets();
+
+function padPage(page: number): string {
+  return page.toString().padStart(3, "0");
+}
+
+function withWorkbookMetadata(task: (typeof tasks)[number]) {
+  const taskImageUrl = "imageUrl" in task ? task.imageUrl : undefined;
+  const generatedAssets = generatedAssetsBySlug.get(task.slug);
+  const workbookPart = "I";
+  const workbookTitle = "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I";
+  const sourcePdfName = "Õpetaja juhendmaterjal_pdf.pdf";
+  const sourcePageNumber = task.pageRef;
+  const sourcePdfPageNumber = sourcePageNumber ? sourcePageNumber + 3 : undefined;
+  const pageImageUrl = sourcePageNumber
+    ? `/images/workbooks/part-I/pages/page-${padPage(sourcePageNumber)}.png`
+    : undefined;
+
+  if (generatedAssets) {
+    return {
+      ...task,
+      imageUrl: generatedAssets.imageUrl ?? taskImageUrl,
+      workbookPart: generatedAssets.workbookPart,
+      workbookTitle,
+      sourcePdfName: generatedAssets.sourcePdfName,
+      sourcePageNumber: generatedAssets.sourcePageNumber,
+      sourcePdfPageNumber: generatedAssets.sourcePdfPageNumber,
+      pageImageUrl: generatedAssets.pageImageUrl,
+      strategyImageUrls: generatedAssets.strategyImageUrls,
+      workbookAssets: generatedAssets.assets,
+    };
+  }
+
+  const workbookAssets = [
+    ...(sourcePageNumber && pageImageUrl
+      ? [
+          {
+            kind: "page" as const,
+            url: pageImageUrl,
+            page: sourcePageNumber,
+            order: 0,
+            label: `Workbook page ${sourcePageNumber}`,
+            sourcePdfName,
+            pdfPage: sourcePdfPageNumber,
+          },
+        ]
+      : []),
+    ...(taskImageUrl && sourcePageNumber
+      ? [
+          {
+            kind: "task" as const,
+            url: taskImageUrl,
+            page: sourcePageNumber,
+            order: 1,
+            label: task.titleEt,
+            sourcePdfName,
+            pdfPage: sourcePdfPageNumber,
+          },
+        ]
+      : []),
+  ];
+
+  return {
+    ...task,
+    workbookPart,
+    workbookTitle,
+    sourcePdfName,
+    sourcePageNumber,
+    sourcePdfPageNumber,
+    pageImageUrl,
+    strategyImageUrls: [],
+    workbookAssets,
+  };
+}
 
 async function buildEmbeddingText(task: (typeof tasks)[number]): Promise<string> {
   const strategyNames = task.strategies.map((s) => `${s.nameEt} (${s.name})`).join(", ");
@@ -101,12 +232,13 @@ async function seed() {
     try {
       process.stdout.write(`Processing: ${task.slug} ... `);
 
+      const taskWithWorkbook = withWorkbookMetadata(task);
       const embeddingText = await buildEmbeddingText(task);
       const embedding = await generateEmbedding(embeddingText);
 
       const result = await Task.findOneAndUpdate(
         { slug: task.slug },
-        { ...task, embedding },
+        { ...taskWithWorkbook, embedding },
         { upsert: true, returnDocument: "after" }
       );
 

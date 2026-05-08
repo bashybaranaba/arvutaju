@@ -31,7 +31,34 @@ export async function PATCH(
 
   const task = await Task.findOneAndUpdate(
     { slug },
-    { imageUrl },
+    [
+      {
+        $set: {
+          imageUrl,
+          workbookAssets: {
+            $concatArrays: [
+              {
+                $filter: {
+                  input: { $ifNull: ["$workbookAssets", []] },
+                  as: "asset",
+                  cond: { $ne: ["$$asset.kind", "task"] },
+                },
+              },
+              [
+                {
+                  kind: "task",
+                  url: imageUrl,
+                  page: { $ifNull: ["$sourcePageNumber", "$pageRef"] },
+                  label: "$titleEt",
+                  sourcePdfName: "$sourcePdfName",
+                  pdfPage: "$sourcePdfPageNumber",
+                },
+              ],
+            ],
+          },
+        },
+      },
+    ],
     { returnDocument: "after" }
   ).lean();
 

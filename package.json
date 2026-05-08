@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "next dev .",
+    "build": "next build .",
+    "start": "next start .",
+    "lint": "eslint",
+    "extract:workbooks": "python3 scripts/extract-workbook-images.py",
+    "audit:workbooks": "python3 scripts/audit-workbook-mapping.py",
+    "audit:db-workbooks": "tsx scripts/audit-db-workbook-assets.ts",
+    "sync:workbook-assets": "tsx scripts/sync-workbook-assets.ts"
   },
   "dependencies": {
     "mongoose": "^9.6.1",
-    "next": "16.2.6",
+    "next": "^16.2.6",
     "openai": "^6.37.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"

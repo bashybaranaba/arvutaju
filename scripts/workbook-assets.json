@@ -1,0 +1,67 @@
+{
+  "workbooks": {
+    "I": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I",
+      "pdfPath": "/Users/bashybaranaba/Desktop/Õpetaja juhendmaterjal_pdf.pdf",
+      "pdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "pageCount": 48,
+      "outputDir": "public/images/workbooks/part-I"
+    },
+    "II": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal II",
+      "pdfPath": "/Users/bashybaranaba/Desktop/Õpetaja juhendmaterjal_II.pdf",
+      "pdfName": "Õpetaja juhendmaterjal_II.pdf",
+      "pageCount": 70,
+      "outputDir": "public/images/workbooks/part-II"
+    }
+  },
+  "tasks": [
+    { "slug": "loendamine-tapid", "workbookPart": "I", "page": 4, "pdfPage": 7, "strategyPages": [{ "page": 5, "pdfPage": 8 }] },
+    { "slug": "loendamine-marjad", "workbookPart": "I", "page": 6, "pdfPage": 9, "strategyPages": [{ "page": 7, "pdfPage": 10 }] },
+    { "slug": "loendamine-liblikad", "workbookPart": "I", "page": 8, "pdfPage": 11, "strategyPages": [{ "page": 9, "pdfPage": 12 }] },
+    { "slug": "loendamine-ohupallid", "workbookPart": "I", "page": 10, "pdfPage": 13, "strategyPages": [{ "page": 11, "pdfPage": 14 }] },
+    { "slug": "loendamine-tammetoud", "workbookPart": "I", "page": 12, "pdfPage": 15, "strategyPages": [{ "page": 13, "pdfPage": 16 }] },
+    { "slug": "loendamine-lilleoied", "workbookPart": "I", "page": 14, "pdfPage": 17, "strategyPages": [{ "page": 15, "pdfPage": 18 }] },
+    { "slug": "loendamine-autod", "workbookPart": "I", "page": 16, "pdfPage": 19, "strategyPages": [{ "page": 17, "pdfPage": 20 }] },
+    { "slug": "loendamine-avokaadod", "workbookPart": "I", "page": 18, "pdfPage": 21, "strategyPages": [{ "page": 19, "pdfPage": 22 }] },
+    { "slug": "liitmine-7-plus-6", "workbookPart": "I", "page": 21, "pdfPage": 24, "strategyPages": [{ "page": 22, "pdfPage": 25 }] },
+    { "slug": "liitmine-12-plus-17", "workbookPart": "I", "page": 23, "pdfPage": 26, "strategyPages": [{ "page": 24, "pdfPage": 27 }] },
+    { "slug": "liitmine-27-plus-35", "workbookPart": "I", "page": 25, "pdfPage": 28, "strategyPages": [{ "page": 26, "pdfPage": 29 }] },
+    { "slug": "liitmine-349-plus-36", "workbookPart": "I", "page": 27, "pdfPage": 30, "strategyPages": [{ "page": 28, "pdfPage": 31 }] },
+    { "slug": "liitmine-349-plus-156", "workbookPart": "I", "page": 29, "pdfPage": 32, "strategyPages": [{ "page": 30, "pdfPage": 33 }] },
+    { "slug": "lahutamine-19-miinus-6", "workbookPart": "I", "page": 32, "pdfPage": 35, "strategyPages": [{ "page": 33, "pdfPage": 36 }] },
+    { "slug": "lahutamine-47-miinus-20", "workbookPart": "I", "page": 34, "pdfPage": 37, "strategyPages": [{ "page": 35, "pdfPage": 38 }] },
+    { "slug": "lahutamine-56-miinus-8", "workbookPart": "I", "page": 36, "pdfPage": 39, "strategyPages": [{ "page": 37, "pdfPage": 40 }] },
+    { "slug": "lahutamine-35-miinus-19", "workbookPart": "I", "page": 38, "pdfPage": 41, "strategyPages": [{ "page": 39, "pdfPage": 42 }] },
+    { "slug": "lahutamine-764-miinus-321", "workbookPart": "I", "page": 40, "pdfPage": 43, "strategyPages": [{ "page": 41, "pdfPage": 44 }] }
+  ],
+  "strategyPages": [
+    { "workbookPart": "II", "page": 5, "pdfPage": 6 },
+    { "workbookPart": "II", "page": 7, "pdfPage": 8 },
+    { "workbookPart": "II", "page": 10, "pdfPage": 11 },
+    { "workbookPart": "II", "page": 12, "pdfPage": 13 },
+    { "workbookPart": "II", "page": 14, "pdfPage": 15 },
+    { "workbookPart": "II", "page": 16, "pdfPage": 17 },
+    { "workbookPart": "II", "page": 18, "pdfPage": 19 },
+    { "workbookPart": "II", "page": 21, "pdfPage": 22 },
+    { "workbookPart": "II", "page": 23, "pdfPage": 24 },
+    { "workbookPart": "II", "page": 25, "pdfPage": 26 },
+    { "workbookPart": "II", "page": 27, "pdfPage": 28 },
+    { "workbookPart": "II", "page": 29, "pdfPage": 30 },
+    { "workbookPart": "II", "page": 31, "pdfPage": 32 },
+    { "workbookPart": "II", "page": 34, "pdfPage": 35 },
+    { "workbookPart": "II", "page": 36, "pdfPage": 37 },
+    { "workbookPart": "II", "page": 39, "pdfPage": 40 },
+    { "workbookPart": "II", "page": 41, "pdfPage": 42 },
+    { "workbookPart": "II", "page": 44, "pdfPage": 45 },
+    { "workbookPart": "II", "page": 46, "pdfPage": 47 },
+    { "workbookPart": "II", "page": 49, "pdfPage": 50 },
+    { "workbookPart": "II", "page": 51, "pdfPage": 52 },
+    { "workbookPart": "II", "page": 54, "pdfPage": 55 },
+    { "workbookPart": "II", "page": 56, "pdfPage": 57 },
+    { "workbookPart": "II", "page": 58, "pdfPage": 59 },
+    { "workbookPart": "II", "page": 61, "pdfPage": 62 },
+    { "workbookPart": "II", "page": 63, "pdfPage": 64 },
+    { "workbookPart": "II", "page": 65, "pdfPage": 66 }
+  ]
+}

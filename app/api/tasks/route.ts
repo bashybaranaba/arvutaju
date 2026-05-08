@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
   const difficulty = searchParams.get("difficulty");
   const chapter = searchParams.get("chapter");
   const query = searchParams.get("q");
+  const sort = searchParams.get("sort");
 
   if (query) {
     try {
@@ -61,7 +62,11 @@ export async function GET(request: NextRequest) {
 
   const filter = buildFilter(operation, grade, chapter, difficulty);
   const tasks = await Task.find(filter, { embedding: 0 })
-    .sort({ chapter: 1, chapterOrder: 1 })
+    .sort(
+      sort === "workbook"
+        ? { workbookPart: 1, sourcePageNumber: 1, chapter: 1, chapterOrder: 1 }
+        : { chapter: 1, chapterOrder: 1 }
+    )
     .lean();
   return Response.json({ tasks, source: "filter" });
 }

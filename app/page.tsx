@@ -332,6 +332,14 @@ function Hero({ copy }: { copy: LandingCopy }) {
           <p className="mx-auto mt-4 max-w-lg text-pretty text-lg leading-8 text-[#5f5b57]">
             {copy.subheading}
           </p>
+          <Link
+            href="/workbook"
+            className="inline-flex mt-4 text-sm font-medium text-blue-700 hover:text-blue-900"
+          >
+            {isEt
+              ? "Liigu läbi töövihiku ülesanne ülesande haaval →"
+              : "Walk through the workbook task by task →"}
+          </Link>
         </div>
 
         <PromptPreview copy={copy} />
