@@ -26,18 +26,12 @@ const landingCopy = {
     loginUnavailable: "Logi sisse ei ole veel saadaval",
     start: "Alusta",
     getStarted: "Alusta",
-    viewSample: "Vaata töövoogu",
-    eyebrow: "",
     headline: "Muuda matemaatiline mõtlemine nähtavaks",
     subheading: "Valmista ülesandeid, mis avavad õpilaste mõtlemise ja strateegiad.",
-    promptTitle: "Kirjelda, millist arutelu soovid tunnis avada",
-    promptPreviewLabel: "Eelvaade",
     attachmentLabel: "Lisa manus",
     voiceLabel: "Häälsisend",
     promptLabel: "Kirjelda arvutaju ülesannet",
     promptPlaceholder: "Kirjelda, millist arvutaju ülesannet vajad…",
-    createTask: "Koosta ülesanne",
-    createTaskUnavailable: "Ülesande koostamine lisandub hiljem.",
     promptChips: [
       "5. klass · kümnendmurrud",
       "Lahutamine arvteljel",
@@ -91,7 +85,38 @@ const landingCopy = {
         body: "Mõtlemine sõnadesse.",
       },
     ],
-    finalCta: "Valmista järgmine arvutaju arutelu mõne minutiga.",
+    finalCtaEyebrow: "Järgmine samm",
+    finalCta: "Valmista esimene arvutaju arutelu ette",
+    finalCtaBody:
+      "Alusta klassi, teema ja arutelu fookuse kirjeldamisest. Arvutaju aitab koondada ülesande, strateegiad ja suunavad küsimused õpetaja töövoogu.",
+    footerTagline: "Õpetaja tööriist matemaatilise mõtlemise nähtavaks muutmiseks.",
+    footerColumns: [
+      {
+        title: "Toode",
+        links: [
+          { label: "Alusta", href: "#alusta" },
+          { label: "Töövoog", href: "#toovoog" },
+          { label: "Põhimõtted", href: "#metoodika" },
+        ],
+      },
+      {
+        title: "Õpetajale",
+        links: [
+          { label: "Ülesanded klassiruumi", href: "#toovoog" },
+          { label: "Lahendusstrateegiad", href: "#toovoog" },
+          { label: "Arutelu tugi", href: "#metoodika" },
+        ],
+      },
+      {
+        title: "Ressursid",
+        links: [
+          { label: "Metoodika", href: "#metoodika" },
+          { label: "Töövoo näide", href: "#toovoog" },
+          { label: "English", href: "/?lang=en" },
+        ],
+      },
+    ],
+    footerCopyright: "© 2026 Arvutaju.",
   },
   en: {
     navLabel: "Primary navigation",
@@ -103,18 +128,12 @@ const landingCopy = {
     loginUnavailable: "Log in is not available yet",
     start: "Start",
     getStarted: "Get started",
-    viewSample: "View workflow",
-    eyebrow: "",
     headline: "Make mathematical thinking visible",
     subheading: "Prepare tasks that reveal students' thinking and strategies.",
-    promptTitle: "Describe the discussion you want to open in class",
-    promptPreviewLabel: "Preview",
     attachmentLabel: "Add attachment",
     voiceLabel: "Voice input",
     promptLabel: "Describe a number sense task",
     promptPlaceholder: "Describe the number sense task you need…",
-    createTask: "Create task",
-    createTaskUnavailable: "Task generation will be added later.",
     promptChips: [
       "Grade 5 · decimals",
       "Subtraction on a number line",
@@ -168,7 +187,38 @@ const landingCopy = {
         body: "Thinking put into words.",
       },
     ],
-    finalCta: "Prepare your next number sense discussion in a few minutes.",
+    finalCtaEyebrow: "Next step",
+    finalCta: "Prepare your first number sense discussion",
+    finalCtaBody:
+      "Start by describing the grade, topic, and discussion focus. Arvutaju helps bring the task, strategies, and guiding questions into a teacher-friendly workflow.",
+    footerTagline: "A teacher tool for making mathematical thinking visible.",
+    footerColumns: [
+      {
+        title: "Product",
+        links: [
+          { label: "Start", href: "#alusta" },
+          { label: "Workflow", href: "#toovoog" },
+          { label: "Principles", href: "#metoodika" },
+        ],
+      },
+      {
+        title: "For Teachers",
+        links: [
+          { label: "Classroom tasks", href: "#toovoog" },
+          { label: "Solution strategies", href: "#toovoog" },
+          { label: "Discussion support", href: "#metoodika" },
+        ],
+      },
+      {
+        title: "Resources",
+        links: [
+          { label: "Methodology", href: "#metoodika" },
+          { label: "Example workflow", href: "#toovoog" },
+          { label: "Eesti", href: "/" },
+        ],
+      },
+    ],
+    footerCopyright: "© 2026 Arvutaju.",
   },
 } as const;
 
@@ -193,6 +243,7 @@ export default async function Home({
         <Features copy={copy} />
         <Principles copy={copy} />
         <FinalCta copy={copy} />
+        <Footer copy={copy} lang={lang} />
       </main>
     </div>
   );
@@ -222,7 +273,7 @@ function Header({ copy, lang }: { copy: LandingCopy; lang: Language }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           <LanguageToggle copy={copy} lang={lang} />
           <button
             type="button"
@@ -275,7 +326,7 @@ function Hero({ copy }: { copy: LandingCopy }) {
     <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-[radial-gradient(circle_at_50%_70%,rgba(176,156,240,0.15),transparent_34%),radial-gradient(circle_at_48%_80%,rgba(252,101,19,0.10),transparent_32%),linear-gradient(180deg,#fffaf4_0%,#fffdf9_60%,#fffaf4_100%)] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto w-full">
         <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-balance text-[2.75rem] font-semibold leading-[1.04] tracking-[-0.04em] text-[#1b1b1f] sm:text-6xl">
+          <h1 className="text-balance text-[2.25rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#1b1b1f] sm:text-[2.875rem] lg:text-[3.25rem]">
             {copy.headline}
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-pretty text-lg leading-8 text-[#5f5b57]">
@@ -473,32 +524,36 @@ function Principles({ copy }: { copy: LandingCopy }) {
       aria-labelledby="principles-heading"
     >
       <div className={containerClassName}>
-        <Card className="bg-white p-5 sm:p-7 lg:p-8">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <SectionIntro
-              eyebrow={copy.methodEyebrow}
-              title={copy.principlesHeading}
-              id="principles-heading"
-            >
-              {copy.principlesBody}
-            </SectionIntro>
+        <Card className="overflow-hidden rounded-[2rem] bg-white p-0">
+          <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="p-6 sm:p-8 lg:p-10">
+              <SectionIntro
+                eyebrow={copy.methodEyebrow}
+                title={copy.principlesHeading}
+                id="principles-heading"
+              >
+                {copy.principlesBody}
+              </SectionIntro>
+            </div>
 
-            <div className="grid items-stretch gap-4 sm:grid-cols-3">
-              {copy.principles.map((principle) => (
-                <div
+            <ol className="grid gap-3 border-t border-[#eadfd4] bg-[#fffdf9] p-4 sm:p-5 lg:border-l lg:border-t-0 lg:p-6">
+              {copy.principles.map((principle, index) => (
+                <li
                   key={principle.title}
-                  className="flex min-h-[8.5rem] flex-col rounded-2xl border border-[#eadfd4] bg-[#fffdf9] p-5"
+                  className="flex min-h-24 items-start gap-4 rounded-2xl border border-[#eadfd4] bg-white/80 p-4"
                 >
-                  <div className="flex min-h-10 items-start gap-3">
-                    <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-[#b09cf0]" />
-                    <h3 className="text-sm font-semibold leading-5 text-[#1b1b1f]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#f1edff] text-sm font-semibold text-[#6a50d4]">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-sm font-semibold leading-5 text-[#1b1b1f] sm:text-base">
                       {principle.title}
                     </h3>
+                    <p className="mt-2 text-sm leading-6 text-[#5f5b57]">{principle.body}</p>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-[#5f5b57]">{principle.body}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </Card>
       </div>
@@ -508,16 +563,74 @@ function Principles({ copy }: { copy: LandingCopy }) {
 
 function FinalCta({ copy }: { copy: LandingCopy }) {
   return (
-    <section className="px-4 pb-24 pt-16 sm:px-6 sm:pt-20 lg:px-8">
-      <Card className="mx-auto max-w-4xl p-7 text-center sm:p-9">
-        <h2 className="text-balance text-2xl font-semibold tracking-normal text-[#1b1b1f] sm:text-3xl">
-          {copy.finalCta}
-        </h2>
-        <div className="mt-6">
-          <ButtonLink href="#alusta">{copy.start}</ButtonLink>
+    <section className="px-4 pb-8 pt-4 sm:px-6 sm:pb-10 sm:pt-6 lg:px-8">
+      <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#2b2926] bg-[#1b1b1f] p-6 text-white shadow-sm shadow-[#eadfd4]/55 sm:p-7 lg:p-8">
+        <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold text-[#b09cf0]">{copy.finalCtaEyebrow}</p>
+            <h2 className="mt-2 text-balance text-2xl font-semibold tracking-normal sm:text-3xl">
+              {copy.finalCta}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/75 sm:text-base">
+              {copy.finalCtaBody}
+            </p>
+          </div>
+          <ButtonLink href="#alusta" variant="inverse" className="shrink-0">
+            {copy.start}
+          </ButtonLink>
         </div>
-      </Card>
+      </div>
     </section>
+  );
+}
+
+function Footer({ copy, lang }: { copy: LandingCopy; lang: Language }) {
+  return (
+    <footer className="px-4 pb-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl rounded-[2rem] border border-[#eadfd4] bg-white p-6 shadow-sm shadow-[#eadfd4]/55 sm:p-8 lg:p-10">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_2fr]">
+          <div className="flex flex-col justify-between gap-8">
+            <div>
+              <Logo copy={copy} lang={lang} />
+              <p className="mt-4 max-w-xs text-sm leading-6 text-[#5f5b57]">
+                {copy.footerTagline}
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-[#6c665f]">
+              <Link
+                href={lang === "et" ? "/?lang=en" : "/"}
+                className="font-semibold uppercase transition-colors hover:text-[#1b1b1f]"
+                aria-label={copy.languageLabel}
+              >
+                {lang === "et" ? "EN" : "ET"}
+              </Link>
+              <span aria-hidden="true">·</span>
+              <span>{copy.footerCopyright}</span>
+            </div>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-3">
+            {copy.footerColumns.map((column) => (
+              <div key={column.title}>
+                <h2 className="text-sm font-semibold text-[#1b1b1f]">{column.title}</h2>
+                <ul className="mt-4 space-y-3">
+                  {column.links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-sm leading-6 text-[#5f5b57] transition-colors hover:text-[#1b1b1f]"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -556,7 +669,7 @@ function ButtonLink({
 }: {
   href: string;
   children: ReactNode;
-  variant?: "default" | "outline";
+  variant?: "default" | "outline" | "inverse";
   size?: "default" | "sm" | "icon" | "prompt";
   ariaLabel?: string;
   className?: string;
@@ -567,9 +680,10 @@ function ButtonLink({
       aria-label={ariaLabel}
       className={cn(
         "inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b09cf0] focus-visible:ring-offset-2",
-        variant === "default"
-          ? "bg-[#fc6513] text-white hover:bg-[#e85a10]"
-          : "border border-[#d9cec3] bg-white text-[#1b1b1f] hover:bg-[#f8f0e8]",
+        variant === "default" && "bg-[#fc6513] text-white hover:bg-[#e85a10]",
+        variant === "outline" &&
+          "border border-[#d9cec3] bg-white text-[#1b1b1f] hover:bg-[#f8f0e8]",
+        variant === "inverse" && "bg-white text-[#1b1b1f] hover:bg-[#fff0e7]",
         size === "sm" && "h-9 px-3",
         size === "default" && "h-10 px-4",
         size === "icon" && "h-9 w-9 rounded-full px-0 text-lg",
