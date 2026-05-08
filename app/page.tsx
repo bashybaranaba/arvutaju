@@ -238,7 +238,7 @@ export default async function Home({
       <Header copy={copy} lang={lang} />
 
       <main>
-        <Hero copy={copy} />
+        <Hero copy={copy} lang={lang} />
         <WorkflowPreview copy={copy} lang={lang} />
         <Features copy={copy} />
         <Principles copy={copy} />
@@ -321,7 +321,9 @@ function LanguageToggle({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   );
 }
 
-function Hero({ copy }: { copy: LandingCopy }) {
+function Hero({ copy, lang }: { copy: LandingCopy; lang: Language }) {
+  const isEt = lang === "et";
+
   return (
     <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-[radial-gradient(circle_at_50%_70%,rgba(176,156,240,0.15),transparent_34%),radial-gradient(circle_at_48%_80%,rgba(252,101,19,0.10),transparent_32%),linear-gradient(180deg,#fffaf4_0%,#fffdf9_60%,#fffaf4_100%)] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto w-full">
