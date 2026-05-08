@@ -206,6 +206,7 @@ export default function TeacherAssistantFlow({
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: nextMessages,
@@ -238,6 +239,19 @@ export default function TeacherAssistantFlow({
     didSendInitialPrompt.current = true;
     void sendPrompt(initialPrompt, null);
   }, [initialPrompt, sendPrompt]);
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) =>
+        Promise.all(registrations.map((registration) => registration.unregister())),
+      )
+      .catch(() => {
+        // Best-effort cleanup for stale local dev service workers.
+      });
+  }, []);
 
   async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();

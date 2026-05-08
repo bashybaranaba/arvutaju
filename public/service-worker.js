@@ -1,2 +1,17 @@
-// Intentionally empty. Some browsers request this path when a previous dev
-// session registered a worker; returning a stable no-op file avoids noisy 404s.
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    Promise.all([
+      self.registration.unregister(),
+      caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))),
+      self.clients.matchAll({ type: "window" }).then((clients) => {
+        for (const client of clients) {
+          client.navigate(client.url);
+        }
+      }),
+    ]),
+  );
+});
