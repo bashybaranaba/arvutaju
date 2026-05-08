@@ -86,46 +86,54 @@ Number Talk response shape:
 }
 
 export async function POST(request: NextRequest) {
-  const { messages, taskSlug, lang = "et" } = await request.json();
+  try {
+    const { messages, taskSlug, lang = "et" } = await request.json();
 
-  let task: ITask | null = null;
-  if (taskSlug) {
-    await connectToDatabase();
-    task = await Task.findOne({ slug: taskSlug }).lean() as ITask | null;
-  }
+    let task: ITask | null = null;
+    if (taskSlug) {
+      await connectToDatabase();
+      task = await Task.findOne({ slug: taskSlug }).lean() as ITask | null;
+    }
 
-  const systemPrompt = buildSystemPrompt(task, lang);
+    const systemPrompt = buildSystemPrompt(task, lang);
 
-  // messages may contain content as string (text-only) or array (text+image_url for vision)
-  // gpt-4o handles both formats natively
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    stream: true,
-    messages: [
-      { role: "system", content: systemPrompt },
-      ...messages,
-    ],
-    temperature: 0.4,
-    max_tokens: 1024,
-  });
+    // messages may contain content as string (text-only) or array (text+image_url for vision)
+    // gpt-4o handles both formats natively
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o",
+      stream: true,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...messages,
+      ],
+      temperature: 0.4,
+      max_tokens: 1024,
+    });
 
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        const text = chunk.choices[0]?.delta?.content ?? "";
-        if (text) {
-          controller.enqueue(encoder.encode(text));
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content ?? "";
+          if (text) {
+            controller.enqueue(encoder.encode(text));
+          }
         }
-      }
-      controller.close();
-    },
-  });
+        controller.close();
+      },
+    });
 
-  return new Response(readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  } catch (error) {
+    console.error("Chat route failed:", error);
+    return Response.json(
+      { error: "Chat request failed" },
+      { status: 500 },
+    );
+  }
 }

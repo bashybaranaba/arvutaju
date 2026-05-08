@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Language = "et" | "en";
 
@@ -144,7 +144,13 @@ const copyByLang: Record<Language, Copy> = {
   },
 };
 
-export default function TeacherAssistantFlow({ lang }: { lang: Language }) {
+export default function TeacherAssistantFlow({
+  lang,
+  initialPrompt = "",
+}: {
+  lang: Language;
+  initialPrompt?: string;
+}) {
   const copy = copyByLang[lang];
   const isEt = lang === "et";
   const [input, setInput] = useState("");
@@ -157,17 +163,28 @@ export default function TeacherAssistantFlow({ lang }: { lang: Language }) {
   const [isThinking, setIsThinking] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const didSendInitialPrompt = useRef(false);
 
   const visibleMessages = useMemo(
     () => messages.filter((message) => getMessageText(message.content).trim()),
     [messages],
   );
 
-  async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
-    event?.preventDefault();
-    const trimmed = input.trim();
-    if ((!trimmed && !imageDataUrl) || isThinking) return;
+  const findContext = useCallback(async (query: string): Promise<Task[]> => {
+    try {
+      const response = await fetch(`/api/tasks?q=${encodeURIComponent(query)}&sort=workbook`);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return (data.tasks ?? []).slice(0, 4);
+    } catch {
+      return [];
+    }
+  }, []);
 
+  const sendPrompt = useCallback(async (promptText: string, promptImageDataUrl: string | null) => {
+    if ((!promptText.trim() && !promptImageDataUrl) || isThinking) return;
+
+    const trimmed = promptText.trim();
     setIsSearching(true);
     const contextTasks = await findContext(trimmed || (isEt ? "õpilase töö pilt" : "student work image"));
     setIsSearching(false);
@@ -178,7 +195,7 @@ export default function TeacherAssistantFlow({ lang }: { lang: Language }) {
       setSelectedTask(contextTask);
     }
 
-    const userContent = buildUserContent(trimmed, imageDataUrl, isEt);
+    const userContent = buildUserContent(trimmed, promptImageDataUrl, isEt);
     const nextMessages = [...messages, { role: "user", content: userContent } satisfies ChatMessage];
 
     setMessages([...nextMessages, { role: "assistant", content: "" }]);
@@ -214,17 +231,19 @@ export default function TeacherAssistantFlow({ lang }: { lang: Language }) {
     } finally {
       setIsThinking(false);
     }
-  }
+  }, [copy.error, findContext, isEt, isThinking, lang, messages, selectedTask]);
 
-  async function findContext(query: string): Promise<Task[]> {
-    try {
-      const response = await fetch(`/api/tasks?q=${encodeURIComponent(query)}&sort=workbook`);
-      if (!response.ok) return [];
-      const data = await response.json();
-      return (data.tasks ?? []).slice(0, 4);
-    } catch {
-      return [];
-    }
+  useEffect(() => {
+    if (!initialPrompt || didSendInitialPrompt.current) return;
+    didSendInitialPrompt.current = true;
+    void sendPrompt(initialPrompt, null);
+  }, [initialPrompt, sendPrompt]);
+
+  async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    const trimmed = input.trim();
+    if ((!trimmed && !imageDataUrl) || isThinking) return;
+    await sendPrompt(trimmed, imageDataUrl);
   }
 
   async function generateSimilarTasks() {

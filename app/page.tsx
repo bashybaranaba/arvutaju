@@ -238,7 +238,7 @@ export default async function Home({
       <Header copy={copy} lang={lang} />
 
       <main>
-        <Hero copy={copy} />
+        <Hero copy={copy} lang={lang} />
         <WorkflowPreview copy={copy} lang={lang} />
         <Features copy={copy} />
         <Principles copy={copy} />
@@ -321,7 +321,7 @@ function LanguageToggle({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   );
 }
 
-function Hero({ copy }: { copy: LandingCopy }) {
+function Hero({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   return (
     <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-[radial-gradient(circle_at_50%_70%,rgba(176,156,240,0.15),transparent_34%),radial-gradient(circle_at_48%_80%,rgba(252,101,19,0.10),transparent_32%),linear-gradient(180deg,#fffaf4_0%,#fffdf9_60%,#fffaf4_100%)] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto w-full">
@@ -333,37 +333,39 @@ function Hero({ copy }: { copy: LandingCopy }) {
             {copy.subheading}
           </p>
           <Link
-            href="/workbook"
-            className="inline-flex mt-4 text-sm font-medium text-blue-700 hover:text-blue-900"
+            href={lang === "en" ? "/workbook?lang=en" : "/workbook"}
+            className="mt-4 inline-flex text-sm font-medium text-blue-700 hover:text-blue-900"
           >
-            {isEt
+            {lang === "et"
               ? "Liigu läbi töövihiku ülesanne ülesande haaval →"
               : "Walk through the workbook task by task →"}
           </Link>
         </div>
 
-        <PromptPreview copy={copy} />
+        <PromptPreview copy={copy} lang={lang} />
       </div>
     </section>
   );
 }
 
-function PromptPreview({ copy }: { copy: LandingCopy }) {
+function PromptPreview({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   return (
     <div id="alusta" className="mx-auto mt-10 max-w-3xl scroll-mt-8">
-      <div className="rounded-[2rem] border border-[#eadfd4] bg-white p-4 shadow-lg shadow-[#b09cf0]/10">
+      <form
+        action="/chat"
+        className="rounded-[2rem] border border-[#eadfd4] bg-white p-4 shadow-lg shadow-[#b09cf0]/10"
+      >
+        <input type="hidden" name="lang" value={lang} />
         <label htmlFor="task-prompt" className="sr-only">
           {copy.promptLabel}
         </label>
-        <div
+        <textarea
           id="task-prompt"
-          role="textbox"
-          aria-label={copy.promptLabel}
-          aria-readonly="true"
-          className="min-h-24 text-base leading-7 text-[#8a8179]"
-        >
-          {copy.promptPlaceholder}
-        </div>
+          name="prompt"
+          rows={3}
+          placeholder={copy.promptPlaceholder}
+          className="block min-h-24 w-full resize-none border-0 bg-transparent text-base leading-7 text-[#1b1b1f] outline-none placeholder:text-[#8a8179]"
+        />
         <div className="mt-4 flex items-center justify-between gap-3">
           <button
             type="button"
@@ -382,34 +384,42 @@ function PromptPreview({ copy }: { copy: LandingCopy }) {
             >
               <MicrophoneIcon />
             </button>
-            <ButtonLink href="#toovoog" size="prompt" ariaLabel={copy.start}>
+            <button
+              type="submit"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[#fc6513] px-3 text-sm font-medium text-white transition-colors hover:bg-[#e85a10] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b09cf0] focus-visible:ring-offset-2 sm:px-4"
+              aria-label={copy.start}
+            >
               <span className="hidden sm:inline">{copy.start}</span>
               <span aria-hidden="true">↑</span>
-            </ButtonLink>
+            </button>
           </div>
         </div>
-      </div>
+      </form>
       <div className="mt-3 flex flex-wrap justify-center gap-2">
         {copy.promptChips.map((chip) => (
-          <QuickPrompt key={chip}>{chip}</QuickPrompt>
+          <QuickPrompt key={chip} lang={lang}>
+            {chip}
+          </QuickPrompt>
         ))}
       </div>
     </div>
   );
 }
 
-function QuickPrompt({ children }: { children: ReactNode }) {
+function QuickPrompt({ children, lang }: { children: ReactNode; lang: Language }) {
+  const prompt = typeof children === "string" ? children : "";
+  const href = `/chat?lang=${lang}&prompt=${encodeURIComponent(prompt)}`;
+
   return (
-    <button
-      type="button"
-      disabled
-      className="inline-flex h-8 cursor-not-allowed items-center gap-2 rounded-full border border-[#d8cdf9] bg-white/80 px-3 text-xs font-medium text-[#6a50d4] shadow-sm shadow-[#b09cf0]/10"
+    <Link
+      href={href}
+      className="inline-flex h-8 items-center gap-2 rounded-full border border-[#d8cdf9] bg-white/80 px-3 text-xs font-medium text-[#6a50d4] shadow-sm shadow-[#b09cf0]/10 transition-colors hover:border-[#b09cf0] hover:bg-white"
     >
       {children}
       <span className="text-[#7c63d8]" aria-hidden="true">
         ↑
       </span>
-    </button>
+    </Link>
   );
 }
 
