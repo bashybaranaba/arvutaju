@@ -14,6 +14,8 @@ export interface ITask extends Document {
   titleEt: string;
   problem: string;
   problemEt: string;
+  chapter: "counting" | "addition" | "subtraction" | "multiplication" | "division";
+  chapterOrder: number;
   operation: "addition" | "subtraction" | "multiplication" | "division" | "mixed";
   gradeMin: number;
   gradeMax: number;
@@ -26,6 +28,7 @@ export interface ITask extends Document {
   tags: string[];
   pageRef?: number;
   answer?: string;
+  imageUrl?: string;
   embedding?: number[];
   createdAt: Date;
   updatedAt: Date;
@@ -46,6 +49,12 @@ const TaskSchema = new Schema<ITask>(
     titleEt: { type: String, required: true },
     problem: { type: String, required: true },
     problemEt: { type: String, required: true },
+    chapter: {
+      type: String,
+      enum: ["counting", "addition", "subtraction", "multiplication", "division"],
+      required: true,
+    },
+    chapterOrder: { type: Number, required: true },
     operation: {
       type: String,
       enum: ["addition", "subtraction", "multiplication", "division", "mixed"],
@@ -62,11 +71,13 @@ const TaskSchema = new Schema<ITask>(
     tags: [String],
     pageRef: { type: Number },
     answer: { type: String },
+    imageUrl: { type: String },
     embedding: [Number],
   },
   { timestamps: true }
 );
 
+TaskSchema.index({ chapter: 1, chapterOrder: 1 });
 TaskSchema.index({ operation: 1, gradeMin: 1 });
 TaskSchema.index({ tags: 1 });
 

@@ -10,28 +10,23 @@ interface Task {
   title: string;
   problemEt: string;
   problem: string;
+  chapter: "counting" | "addition" | "subtraction";
+  chapterOrder: number;
   operation: string;
   gradeMin: number;
   gradeMax: number;
   difficulty: "easy" | "medium" | "hard";
   tags: string[];
   answer?: string;
+  imageUrl?: string;
+  pageRef?: number;
 }
 
-const OPERATIONS = [
-  { value: "", label: "Kõik tehted", labelEn: "All" },
-  { value: "addition", label: "Liitmine", labelEn: "Addition" },
-  { value: "subtraction", label: "Lahutamine", labelEn: "Subtraction" },
-  { value: "multiplication", label: "Korrutamine", labelEn: "Multiplication" },
-  { value: "division", label: "Jagamine", labelEn: "Division" },
-];
-
-const DIFFICULTIES = [
-  { value: "", label: "Kõik tasemed" },
-  { value: "easy", label: "Lihtne" },
-  { value: "medium", label: "Keskmine" },
-  { value: "hard", label: "Raske" },
-];
+const CHAPTERS = [
+  { value: "counting", labelEt: "Loendamine", labelEn: "Counting", icon: "👁", pages: "lk 4–19" },
+  { value: "addition", labelEt: "Liitmine", labelEn: "Addition", icon: "+", pages: "lk 21–29" },
+  { value: "subtraction", labelEt: "Lahutamine", labelEn: "Subtraction", icon: "−", pages: "lk 32–40" },
+] as const;
 
 const DIFFICULTY_COLORS = {
   easy: "bg-emerald-100 text-emerald-800",
@@ -39,52 +34,33 @@ const DIFFICULTY_COLORS = {
   hard: "bg-rose-100 text-rose-800",
 };
 
-const DIFFICULTY_LABELS: Record<string, string> = {
+const DIFFICULTY_LABELS_ET: Record<string, string> = {
   easy: "Lihtne",
   medium: "Keskmine",
   hard: "Raske",
 };
 
-const OPERATION_ICONS: Record<string, string> = {
-  addition: "+",
-  subtraction: "−",
-  multiplication: "×",
-  division: "÷",
-  mixed: "~",
-};
-
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [operation, setOperation] = useState("");
-  const [difficulty, setDifficulty] = useState("");
-  const [query, setQuery] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [chapter, setChapter] = useState<"counting" | "addition" | "subtraction">("counting");
   const [lang, setLang] = useState<"et" | "en">("et");
+
+  const isEt = lang === "et";
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (operation) params.set("operation", operation);
-    if (difficulty) params.set("difficulty", difficulty);
-    if (query) params.set("q", query);
-
-    const res = await fetch(`/api/tasks?${params}`);
+    const res = await fetch(`/api/tasks?chapter=${chapter}`);
     const data = await res.json();
     setTasks(data.tasks ?? []);
     setLoading(false);
-  }, [operation, difficulty, query]);
+  }, [chapter]);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setQuery(searchInput);
-  };
-
-  const isEt = lang === "et";
+  const activeChapter = CHAPTERS.find((c) => c.value === chapter)!;
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -109,115 +85,123 @@ export default function Home() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8">
-        {/* Search */}
-        <form onSubmit={handleSearch} className="mb-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder={isEt ? "Otsi strateegiat, tehtet... (semantiline otsing)" : "Search by strategy, topic... (semantic search)"}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              {isEt ? "Otsi" : "Search"}
-            </button>
-            {query && (
-              <button
-                type="button"
-                onClick={() => { setQuery(""); setSearchInput(""); }}
-                className="px-4 py-2.5 text-zinc-500 text-sm rounded-xl border border-zinc-200 hover:bg-zinc-100 transition-colors"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Filters */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <div className="flex gap-1 flex-wrap">
-            {OPERATIONS.map((op) => (
-              <button
-                key={op.value}
-                onClick={() => setOperation(op.value)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-                  operation === op.value
-                    ? "bg-zinc-900 text-white"
-                    : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                {isEt ? op.label : op.labelEn}
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-1 flex-wrap">
-            {DIFFICULTIES.map((d) => (
-              <button
-                key={d.value}
-                onClick={() => setDifficulty(d.value)}
-                className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
-                  difficulty === d.value
-                    ? "bg-zinc-900 text-white"
-                    : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                }`}
-              >
-                {d.label}
-              </button>
-            ))}
-          </div>
+        {/* Workbook intro */}
+        <div className="mb-8">
+          <p className="text-sm text-zinc-500">
+            {isEt
+              ? "Vali peatükk, et avada konkreetne tund. Iga tund sisaldab strateegiad, juhendamise nõuanded ja AI abilise."
+              : "Select a chapter to open a specific lesson. Each lesson includes strategies, facilitation tips, and an AI coach."}
+          </p>
         </div>
 
-        {/* Results */}
+        {/* Chapter tabs */}
+        <div className="flex gap-2 mb-8">
+          {CHAPTERS.map((ch) => (
+            <button
+              key={ch.value}
+              onClick={() => setChapter(ch.value)}
+              className={`flex-1 py-3 px-4 rounded-2xl text-sm font-medium transition-all border ${
+                chapter === ch.value
+                  ? "bg-zinc-900 text-white border-zinc-900"
+                  : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-lg">{ch.icon}</span>
+                <span>{isEt ? ch.labelEt : ch.labelEn}</span>
+                <span className={`text-xs opacity-60 ${chapter === ch.value ? "text-zinc-300" : "text-zinc-400"}`}>
+                  {ch.pages}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Chapter heading */}
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-bold text-zinc-900">
+            {isEt ? activeChapter.labelEt : activeChapter.labelEn}
+          </h2>
+          {!loading && (
+            <span className="text-sm text-zinc-400">
+              {isEt ? `${tasks.length} tundi` : `${tasks.length} lessons`}
+            </span>
+          )}
+        </div>
+
+        {/* Task list */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-44 bg-white border border-zinc-200 rounded-2xl animate-pulse" />
+          <div className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-24 bg-white border border-zinc-200 rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : tasks.length === 0 ? (
           <div className="text-center py-20 text-zinc-500">
             {isEt ? "Ülesandeid ei leitud." : "No tasks found."}
           </div>
-        ) : (
-          <>
-            <p className="text-sm text-zinc-500 mb-4">
-              {isEt ? `${tasks.length} ülesannet` : `${tasks.length} tasks`}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tasks.map((task) => (
-                <Link
-                  key={task._id}
-                  href={`/tasks/${task.slug}?lang=${lang}`}
-                  className="group bg-white border border-zinc-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-700 text-xl font-bold rounded-xl">
-                      {OPERATION_ICONS[task.operation] ?? "?"}
-                    </span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[task.difficulty]}`}>
-                      {DIFFICULTY_LABELS[task.difficulty]}
-                    </span>
-                  </div>
-                  <h2 className="text-lg font-bold text-zinc-900 mb-1">
+        ) : chapter === "counting" ? (
+          /* Counting tasks: image grid */
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {tasks.map((task) => (
+              <Link
+                key={task._id}
+                href={`/tasks/${task.slug}?lang=${lang}`}
+                className="group bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:border-blue-300 hover:shadow-md transition-all"
+              >
+                <div className="aspect-square bg-zinc-100 flex items-center justify-center relative overflow-hidden">
+                  {task.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={task.imageUrl}
+                      alt={isEt ? task.titleEt : task.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-4xl select-none">👁</span>
+                  )}
+                </div>
+                <div className="p-3">
+                  <p className="text-sm font-semibold text-zinc-900 truncate">
                     {isEt ? task.titleEt : task.title}
-                  </h2>
-                  <p className="text-sm text-zinc-500 line-clamp-2 mb-3">
+                  </p>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    {isEt ? `lk ${task.pageRef ?? "–"}` : `p. ${task.pageRef ?? "–"}`}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          /* Addition/Subtraction tasks: list */
+          <div className="space-y-3">
+            {tasks.map((task, idx) => (
+              <Link
+                key={task._id}
+                href={`/tasks/${task.slug}?lang=${lang}`}
+                className="group flex items-center gap-5 bg-white border border-zinc-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-md transition-all"
+              >
+                <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-zinc-100 text-zinc-500 text-sm font-bold">
+                  {idx + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-2xl font-bold text-zinc-900">
                     {isEt ? task.problemEt : task.problem}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span>{isEt ? `${task.gradeMin}–${task.gradeMax} klass` : `Grade ${task.gradeMin}–${task.gradeMax}`}</span>
-                    <span className="group-hover:text-blue-600 transition-colors">
-                      {isEt ? "Vaata →" : "View →"}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    {isEt ? `${task.gradeMin}–${task.gradeMax} klass` : `Grade ${task.gradeMin}–${task.gradeMax}`}
+                    {task.pageRef ? ` · lk ${task.pageRef}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[task.difficulty]}`}>
+                    {isEt ? DIFFICULTY_LABELS_ET[task.difficulty] : task.difficulty}
+                  </span>
+                  <span className="text-zinc-300 group-hover:text-blue-500 transition-colors text-lg">→</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         )}
       </main>
     </div>

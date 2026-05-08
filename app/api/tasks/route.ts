@@ -3,9 +3,16 @@ import { connectToDatabase } from "@/lib/mongoose";
 import Task from "@/lib/models/Task";
 import { generateEmbedding } from "@/lib/openai";
 
-function buildFilter(operation: string | null, grade: string | null) {
+function buildFilter(
+  operation: string | null,
+  grade: string | null,
+  chapter: string | null,
+  difficulty: string | null
+) {
   const filter: Record<string, unknown> = {};
+  if (chapter) filter.chapter = { $eq: chapter };
   if (operation) filter.operation = { $eq: operation };
+  if (difficulty) filter.difficulty = { $eq: difficulty };
   if (grade) {
     filter.gradeMin = { $lte: parseInt(grade) };
     filter.gradeMax = { $gte: parseInt(grade) };
@@ -20,13 +27,12 @@ export async function GET(request: NextRequest) {
   const operation = searchParams.get("operation");
   const grade = searchParams.get("grade");
   const difficulty = searchParams.get("difficulty");
+  const chapter = searchParams.get("chapter");
   const query = searchParams.get("q");
 
-  // Vector search when there's a text query
   if (query) {
     try {
       const embedding = await generateEmbedding(query);
-
       const pipeline = [
         {
           $vectorSearch: {
@@ -34,8 +40,8 @@ export async function GET(request: NextRequest) {
             path: "embedding",
             queryVector: embedding,
             numCandidates: 50,
-            limit: 12,
-            filter: buildFilter(operation, grade),
+            limit: 18,
+            filter: buildFilter(operation, grade, chapter, difficulty),
           },
         },
         {
@@ -45,24 +51,17 @@ export async function GET(request: NextRequest) {
           },
         },
       ];
-
       const TaskModel = db.models.Task;
       const results = await TaskModel.aggregate(pipeline);
       return Response.json({ tasks: results, source: "vector" });
     } catch {
-      // Vector index not ready yet — fall through to keyword search
+      // Vector index not ready — fall through
     }
   }
 
-  // Keyword / filter search
-  const filter: Record<string, unknown> = {};
-  if (operation) filter.operation = operation;
-  if (difficulty) filter.difficulty = difficulty;
-  if (grade) {
-    filter.gradeMin = { $lte: parseInt(grade) };
-    filter.gradeMax = { $gte: parseInt(grade) };
-  }
-
-  const tasks = await Task.find(filter, { embedding: 0 }).lean();
+  const filter = buildFilter(operation, grade, chapter, difficulty);
+  const tasks = await Task.find(filter, { embedding: 0 })
+    .sort({ chapter: 1, chapterOrder: 1 })
+    .lean();
   return Response.json({ tasks, source: "filter" });
 }

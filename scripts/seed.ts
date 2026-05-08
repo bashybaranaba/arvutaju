@@ -28,6 +28,8 @@ const TaskSchema = new mongoose.Schema(
     titleEt: String,
     problem: String,
     problemEt: String,
+    chapter: String,
+    chapterOrder: Number,
     operation: String,
     gradeMin: Number,
     gradeMax: Number,
@@ -40,6 +42,7 @@ const TaskSchema = new mongoose.Schema(
     tags: [String],
     pageRef: Number,
     answer: String,
+    imageUrl: String,
     embedding: [Number],
   },
   { timestamps: true }
@@ -54,6 +57,7 @@ async function buildEmbeddingText(task: (typeof tasks)[number]): Promise<string>
 
   return [
     `Ülesanne: ${task.problemEt}`,
+    `Peatükk: ${task.chapter}`,
     `Tehed: ${task.operation}`,
     `Raskusaste: ${task.difficulty}`,
     `Klassid: ${task.gradeMin}–${task.gradeMax}`,
@@ -63,6 +67,7 @@ async function buildEmbeddingText(task: (typeof tasks)[number]): Promise<string>
     `Märksõnad: ${task.tags.join(", ")}`,
     // Also include English for bilingual search
     `Task: ${task.problem}`,
+    `Chapter: ${task.chapter}`,
     `Strategies: ${task.strategies.map((s) => s.name).join(", ")}`,
   ]
     .filter(Boolean)
@@ -83,6 +88,10 @@ async function seed() {
 
   const Task =
     mongoose.models.Task ?? mongoose.model("Task", TaskSchema);
+
+  // Clear old tasks before reseeding with real workbook tasks
+  const deletedCount = await Task.deleteMany({});
+  console.log(`Cleared ${deletedCount.deletedCount} old tasks from DB`);
 
   let inserted = 0;
   let updated = 0;

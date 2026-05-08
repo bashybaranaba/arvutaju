@@ -13,7 +13,7 @@ Sinu ülesanne on aidata õpetajatel:
 - mõista, milliseid strateegiaid õpilased kasutavad
 - diagnoosida levinud väärarusaamu
 - reageerida täpse ja toetava tagasisidega
-- genereerida sarnaseid ülesandeid
+- analüüsida õpilastöid (kui õpetaja laadib pildi)
 
 Vasta alati eesti keeles, kasutades õpetajale sobilikku, sõbralikku ja professionaalset tooni.
 Kui õpetaja küsib inglise keeles, vasta inglise keeles.`
@@ -22,11 +22,13 @@ Your role is to help teachers:
 - understand which strategies students are using
 - diagnose common misconceptions
 - respond with precise, supportive feedback
-- generate similar practice problems
+- analyse student work from photos
 
 Respond in the same language as the teacher's question (Estonian or English).`;
 
   if (!task) return base;
+
+  const isCountingTask = task.chapter === "counting";
 
   const strategiesText = task.strategies
     .map(
@@ -39,14 +41,19 @@ Respond in the same language as the teacher's question (Estonian or English).`;
     .map((m) => `- ${m}`)
     .join("\n");
 
+  const countingNote = isCountingTask
+    ? `\n**Ülesanne tüüp:** Loendamine / subitiseerimine — õpetaja võib laadida üles pildi õpilase tööst või tahvlilt.`
+    : "";
+
   return `${base}
 
 ---
 **Praegune ülesanne / Current task:** ${task.problemEt} (${task.problem})
+**Peatükk / Chapter:** ${task.chapter}
 **Tehted / Operation:** ${task.operation}
 **Klassid / Grade:** ${task.gradeMin}–${task.gradeMax}
 **Raskusaste / Difficulty:** ${task.difficulty}
-**Vastus / Answer:** ${task.answer ?? "not specified"}
+**Vastus / Answer:** ${task.answer ?? "varies"}${countingNote}
 
 **Tuntud strateegiad / Known strategies:**
 ${strategiesText}
@@ -59,7 +66,7 @@ ${task.facilitationEt}
 (EN: ${task.facilitation})
 ---
 
-Ground your responses in the above context. When a teacher describes student work, map it to these known strategies or misconceptions. Be specific and pedagogically grounded.`;
+Ground your responses in the above context. When a teacher describes or shows student work, map it to these known strategies or misconceptions. Be specific and pedagogically grounded. If an image is shared, analyse what strategies or misconceptions it reveals.`;
 }
 
 export async function POST(request: NextRequest) {
@@ -73,6 +80,8 @@ export async function POST(request: NextRequest) {
 
   const systemPrompt = buildSystemPrompt(task, lang);
 
+  // messages may contain content as string (text-only) or array (text+image_url for vision)
+  // gpt-4o handles both formats natively
   const stream = await openai.chat.completions.create({
     model: "gpt-4o",
     stream: true,
