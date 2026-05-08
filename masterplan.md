@@ -16,9 +16,11 @@ A single-session tool where an Estonian math teacher opens a task from the "Mõt
 - [x] Environment variables configured (`.env.local`)
 
 ### Data
-- [x] 22 workbook tasks seeded — all four operations, grades 1–6, bilingual ET/EN (`scripts/seed-data.ts`)
+- [x] 18 workbook tasks seeded — counting/addition/subtraction, grades 1–6, bilingual ET/EN (`scripts/seed-data.ts`)
 - [x] `text-embedding-3-small` embeddings (1536-dim) generated and stored in MongoDB Atlas
-- [ ] PDF page images — not done (need source PDF)
+- [x] Workbook asset schema added — source PDF, page reference, page image URL, task image URL, extracted asset metadata
+- [x] PDF extraction workflow scaffolded (`scripts/extract-workbook-images.py`, `scripts/workbook-assets.json`)
+- [ ] Exact per-task crop boxes — page renders are supported now; crop boxes still need to be tuned against the two PDFs
 
 ### API Routes
 - [x] `GET /api/tasks` — filter by operation/grade/difficulty; vector search when `?q=` given (`app/api/tasks/route.ts`)
@@ -55,8 +57,8 @@ A single-session tool where an Estonian math teacher opens a task from the "Mõt
 
 | # | What | Where | Notes |
 |---|------|-------|-------|
-| 8 | PDF page images → `/public/images/tasks/` | `scripts/extract-images.py` | Visual grounding for workbook tasks |
-| 9 | Add image field to Task model + display in UI | `lib/models/Task.ts`, task detail page | After #8 is done |
+| 8 | Run PDF extraction → `/public/images/tasks/` + page renders | `scripts/extract-workbook-images.py` | Requires PyMuPDF locally |
+| 9 | Tune per-task crop boxes for both workbook PDFs | `scripts/workbook-assets.json` | Page-level references are ready; exact task crops need calibration |
 | 10 | Expand seed data (22 → 40+ tasks) | `scripts/seed-data.ts` | Richer demo coverage |
 | 11 | Auth-ready middleware skeleton | `middleware.ts` | Future-proofing, not needed for demo |
 | 12 | Vercel deploy | `vercel.json` / Vercel dashboard | Live URL for judges |
@@ -125,6 +127,11 @@ Each task document contains:
 - `tags[]` — for keyword search and filtering
 - `answer` — expected answer string
 - `pageRef` — page number in the workbook PDF
+- `workbookPart` / `workbookTitle` — source workbook identity
+- `sourcePdfName` / `sourcePageNumber` — exact provenance for the task
+- `pageImageUrl` — rendered full workbook page
+- `imageUrl` — primary task image/crop shown in the UI
+- `workbookAssets[]` — page/task image assets with type, URL, page, crop, dimensions, checksum
 - `embedding` — 1536-dim vector from `text-embedding-3-small`
 
 ---

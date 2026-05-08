@@ -8,6 +8,26 @@ export interface IStrategy {
   example?: string;
 }
 
+export interface IWorkbookCrop {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface IWorkbookAsset {
+  kind: "page" | "task" | "illustration";
+  url: string;
+  page: number;
+  label?: string;
+  sourcePdfName?: string;
+  pdfPage?: number;
+  crop?: IWorkbookCrop;
+  width?: number;
+  height?: number;
+  checksum?: string;
+}
+
 export interface ITask extends Document {
   slug: string;
   title: string;
@@ -27,6 +47,13 @@ export interface ITask extends Document {
   commonMisconceptionsEt: string[];
   tags: string[];
   pageRef?: number;
+  workbookPart?: "I" | "II";
+  workbookTitle?: string;
+  sourcePdfName?: string;
+  sourcePageNumber?: number;
+  sourcePdfPageNumber?: number;
+  pageImageUrl?: string;
+  workbookAssets: IWorkbookAsset[];
   answer?: string;
   imageUrl?: string;
   embedding?: number[];
@@ -41,6 +68,36 @@ const StrategySchema = new Schema<IStrategy>({
   descriptionEt: { type: String, required: true },
   example: { type: String },
 });
+
+const WorkbookCropSchema = new Schema<IWorkbookCrop>(
+  {
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
+const WorkbookAssetSchema = new Schema<IWorkbookAsset>(
+  {
+    kind: {
+      type: String,
+      enum: ["page", "task", "illustration"],
+      required: true,
+    },
+    url: { type: String, required: true },
+    page: { type: Number, required: true },
+    label: { type: String },
+    sourcePdfName: { type: String },
+    pdfPage: { type: Number },
+    crop: { type: WorkbookCropSchema },
+    width: { type: Number },
+    height: { type: Number },
+    checksum: { type: String },
+  },
+  { _id: false }
+);
 
 const TaskSchema = new Schema<ITask>(
   {
@@ -70,6 +127,13 @@ const TaskSchema = new Schema<ITask>(
     commonMisconceptionsEt: [String],
     tags: [String],
     pageRef: { type: Number },
+    workbookPart: { type: String, enum: ["I", "II"] },
+    workbookTitle: { type: String },
+    sourcePdfName: { type: String },
+    sourcePageNumber: { type: Number },
+    sourcePdfPageNumber: { type: Number },
+    pageImageUrl: { type: String },
+    workbookAssets: { type: [WorkbookAssetSchema], default: [] },
     answer: { type: String },
     imageUrl: { type: String },
     embedding: [Number],
@@ -80,6 +144,8 @@ const TaskSchema = new Schema<ITask>(
 TaskSchema.index({ chapter: 1, chapterOrder: 1 });
 TaskSchema.index({ operation: 1, gradeMin: 1 });
 TaskSchema.index({ tags: 1 });
+TaskSchema.index({ workbookPart: 1, sourcePageNumber: 1 });
+TaskSchema.index({ sourcePdfName: 1, sourcePdfPageNumber: 1 });
 
 const Task: Model<ITask> =
   mongoose.models.Task ?? mongoose.model<ITask>("Task", TaskSchema);

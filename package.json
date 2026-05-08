@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "extract:workbooks": "python3 scripts/extract-workbook-images.py",
+    "sync:workbook-assets": "tsx scripts/sync-workbook-assets.ts"
   },
   "dependencies": {
     "mongoose": "^9.6.1",

@@ -1,0 +1,775 @@
+{
+  "workbooks": {
+    "I": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I",
+      "pdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "pageCount": 48,
+      "pages": [
+        {
+          "kind": "page",
+          "page": 4,
+          "pdfPage": 7,
+          "url": "/images/workbooks/part-I/pages/page-004.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420"
+        },
+        {
+          "kind": "page",
+          "page": 6,
+          "pdfPage": 9,
+          "url": "/images/workbooks/part-I/pages/page-006.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148"
+        },
+        {
+          "kind": "page",
+          "page": 8,
+          "pdfPage": 11,
+          "url": "/images/workbooks/part-I/pages/page-008.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506"
+        },
+        {
+          "kind": "page",
+          "page": 10,
+          "pdfPage": 13,
+          "url": "/images/workbooks/part-I/pages/page-010.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca"
+        },
+        {
+          "kind": "page",
+          "page": 12,
+          "pdfPage": 15,
+          "url": "/images/workbooks/part-I/pages/page-012.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912"
+        },
+        {
+          "kind": "page",
+          "page": 14,
+          "pdfPage": 17,
+          "url": "/images/workbooks/part-I/pages/page-014.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba"
+        },
+        {
+          "kind": "page",
+          "page": 16,
+          "pdfPage": 19,
+          "url": "/images/workbooks/part-I/pages/page-016.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5"
+        },
+        {
+          "kind": "page",
+          "page": 18,
+          "pdfPage": 21,
+          "url": "/images/workbooks/part-I/pages/page-018.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2"
+        },
+        {
+          "kind": "page",
+          "page": 21,
+          "pdfPage": 24,
+          "url": "/images/workbooks/part-I/pages/page-021.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2"
+        },
+        {
+          "kind": "page",
+          "page": 23,
+          "pdfPage": 26,
+          "url": "/images/workbooks/part-I/pages/page-023.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b"
+        },
+        {
+          "kind": "page",
+          "page": 25,
+          "pdfPage": 28,
+          "url": "/images/workbooks/part-I/pages/page-025.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509"
+        },
+        {
+          "kind": "page",
+          "page": 27,
+          "pdfPage": 30,
+          "url": "/images/workbooks/part-I/pages/page-027.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768"
+        },
+        {
+          "kind": "page",
+          "page": 29,
+          "pdfPage": 32,
+          "url": "/images/workbooks/part-I/pages/page-029.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0"
+        },
+        {
+          "kind": "page",
+          "page": 32,
+          "pdfPage": 35,
+          "url": "/images/workbooks/part-I/pages/page-032.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70"
+        },
+        {
+          "kind": "page",
+          "page": 34,
+          "pdfPage": 37,
+          "url": "/images/workbooks/part-I/pages/page-034.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7"
+        },
+        {
+          "kind": "page",
+          "page": 36,
+          "pdfPage": 39,
+          "url": "/images/workbooks/part-I/pages/page-036.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66"
+        },
+        {
+          "kind": "page",
+          "page": 38,
+          "pdfPage": 41,
+          "url": "/images/workbooks/part-I/pages/page-038.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f"
+        },
+        {
+          "kind": "page",
+          "page": 40,
+          "pdfPage": 43,
+          "url": "/images/workbooks/part-I/pages/page-040.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b"
+        }
+      ]
+    },
+    "II": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal II",
+      "pdfName": "Õpetaja juhendmaterjal_II.pdf",
+      "pageCount": 70,
+      "pages": []
+    }
+  },
+  "tasks": [
+    {
+      "slug": "loendamine-tapid",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 4,
+      "sourcePdfPageNumber": 7,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-004.png",
+      "imageUrl": "/images/tasks/loendamine-tapid.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 4,
+          "pdfPage": 7,
+          "url": "/images/workbooks/part-I/pages/page-004.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420"
+        },
+        {
+          "kind": "task",
+          "page": 4,
+          "pdfPage": 7,
+          "url": "/images/tasks/loendamine-tapid.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1c8a5c77f8bbe8b3ca6c3e4108cab365083657e5b54d1643ebedfcaea6dd7420",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-ohupallid",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 6,
+      "sourcePdfPageNumber": 9,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-006.png",
+      "imageUrl": "/images/tasks/loendamine-ohupallid.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 6,
+          "pdfPage": 9,
+          "url": "/images/workbooks/part-I/pages/page-006.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148"
+        },
+        {
+          "kind": "task",
+          "page": 6,
+          "pdfPage": 9,
+          "url": "/images/tasks/loendamine-ohupallid.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "a2a970e150600313f9abc4244d721eacdb8a9d24f2f180b06587ee88da0e1148",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-tammetoud",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 8,
+      "sourcePdfPageNumber": 11,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-008.png",
+      "imageUrl": "/images/tasks/loendamine-tammetoud.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 8,
+          "pdfPage": 11,
+          "url": "/images/workbooks/part-I/pages/page-008.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506"
+        },
+        {
+          "kind": "task",
+          "page": 8,
+          "pdfPage": 11,
+          "url": "/images/tasks/loendamine-tammetoud.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c59c49e5f2b5b3bc1a7cc79ffe3f2577a299caf7564e731f551722c032770506",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-lilleoied",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 10,
+      "sourcePdfPageNumber": 13,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-010.png",
+      "imageUrl": "/images/tasks/loendamine-lilleoied.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 10,
+          "pdfPage": 13,
+          "url": "/images/workbooks/part-I/pages/page-010.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca"
+        },
+        {
+          "kind": "task",
+          "page": 10,
+          "pdfPage": 13,
+          "url": "/images/tasks/loendamine-lilleoied.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1d4459ae38a4a658e4e8a757ad9fa9150d5c4e236d49678dc15739fba1472eca",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-autod",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 12,
+      "sourcePdfPageNumber": 15,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-012.png",
+      "imageUrl": "/images/tasks/loendamine-autod.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 12,
+          "pdfPage": 15,
+          "url": "/images/workbooks/part-I/pages/page-012.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912"
+        },
+        {
+          "kind": "task",
+          "page": 12,
+          "pdfPage": 15,
+          "url": "/images/tasks/loendamine-autod.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d2325dd088bd53f718998f4d890ca2795d10bcba4f91b732dfb4a01ffa8c4912",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-avokaadod",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 14,
+      "sourcePdfPageNumber": 17,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-014.png",
+      "imageUrl": "/images/tasks/loendamine-avokaadod.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 14,
+          "pdfPage": 17,
+          "url": "/images/workbooks/part-I/pages/page-014.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba"
+        },
+        {
+          "kind": "task",
+          "page": 14,
+          "pdfPage": 17,
+          "url": "/images/tasks/loendamine-avokaadod.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "f40049d1c40548d0c5f7ab1867317689a9505d0d00baa12c0ff03fce1fe270ba",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-marjad",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 16,
+      "sourcePdfPageNumber": 19,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-016.png",
+      "imageUrl": "/images/tasks/loendamine-marjad.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 16,
+          "pdfPage": 19,
+          "url": "/images/workbooks/part-I/pages/page-016.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5"
+        },
+        {
+          "kind": "task",
+          "page": 16,
+          "pdfPage": 19,
+          "url": "/images/tasks/loendamine-marjad.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "14506045ba8e173c8945b8801ff5cfb3111afd31b0240d262dd284193ce64cd5",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "loendamine-liblikad",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 18,
+      "sourcePdfPageNumber": 21,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-018.png",
+      "imageUrl": "/images/tasks/loendamine-liblikad.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 18,
+          "pdfPage": 21,
+          "url": "/images/workbooks/part-I/pages/page-018.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2"
+        },
+        {
+          "kind": "task",
+          "page": 18,
+          "pdfPage": 21,
+          "url": "/images/tasks/loendamine-liblikad.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c99685fcf345fc57384836049df4c85af464796577fb2d33efa67a102ebeb3c2",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "liitmine-7-plus-6",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 21,
+      "sourcePdfPageNumber": 24,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-021.png",
+      "imageUrl": "/images/tasks/liitmine-7-plus-6.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 21,
+          "pdfPage": 24,
+          "url": "/images/workbooks/part-I/pages/page-021.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2"
+        },
+        {
+          "kind": "task",
+          "page": 21,
+          "pdfPage": 24,
+          "url": "/images/tasks/liitmine-7-plus-6.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "63364027e40f4b0be13507be37637a8e8677696e8211631b92df40bd64032bc2",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "liitmine-12-plus-17",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 23,
+      "sourcePdfPageNumber": 26,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-023.png",
+      "imageUrl": "/images/tasks/liitmine-12-plus-17.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 23,
+          "pdfPage": 26,
+          "url": "/images/workbooks/part-I/pages/page-023.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b"
+        },
+        {
+          "kind": "task",
+          "page": 23,
+          "pdfPage": 26,
+          "url": "/images/tasks/liitmine-12-plus-17.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "1b5bb09835fd6d7fd903cd4f081f91f4139eb96bd70c77be86427555c8a8381b",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "liitmine-27-plus-35",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 25,
+      "sourcePdfPageNumber": 28,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-025.png",
+      "imageUrl": "/images/tasks/liitmine-27-plus-35.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 25,
+          "pdfPage": 28,
+          "url": "/images/workbooks/part-I/pages/page-025.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509"
+        },
+        {
+          "kind": "task",
+          "page": 25,
+          "pdfPage": 28,
+          "url": "/images/tasks/liitmine-27-plus-35.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "159bf8c4fa5cc2bff00f2bf88fa0dd9924b56ed7a0ea1eb98269d6e5109d3509",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "liitmine-349-plus-36",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 27,
+      "sourcePdfPageNumber": 30,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-027.png",
+      "imageUrl": "/images/tasks/liitmine-349-plus-36.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 27,
+          "pdfPage": 30,
+          "url": "/images/workbooks/part-I/pages/page-027.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768"
+        },
+        {
+          "kind": "task",
+          "page": 27,
+          "pdfPage": 30,
+          "url": "/images/tasks/liitmine-349-plus-36.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "c5a48f88f74fabb0c0a6477f6a56f1097e6ddf5648c0882277c0e4888041e768",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "liitmine-349-plus-156",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 29,
+      "sourcePdfPageNumber": 32,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-029.png",
+      "imageUrl": "/images/tasks/liitmine-349-plus-156.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 29,
+          "pdfPage": 32,
+          "url": "/images/workbooks/part-I/pages/page-029.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0"
+        },
+        {
+          "kind": "task",
+          "page": 29,
+          "pdfPage": 32,
+          "url": "/images/tasks/liitmine-349-plus-156.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "77d3c0d5db0032c11f3da1b9d82c76cddcf584534627814d8cfa351006d665a0",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "lahutamine-19-miinus-6",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 32,
+      "sourcePdfPageNumber": 35,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-032.png",
+      "imageUrl": "/images/tasks/lahutamine-19-miinus-6.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 32,
+          "pdfPage": 35,
+          "url": "/images/workbooks/part-I/pages/page-032.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70"
+        },
+        {
+          "kind": "task",
+          "page": 32,
+          "pdfPage": 35,
+          "url": "/images/tasks/lahutamine-19-miinus-6.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "4e7c1c9267753ade92cf14561ed36f0d65dbe4ed0f678b1028a3dbfcd8024d70",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "lahutamine-47-miinus-20",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 34,
+      "sourcePdfPageNumber": 37,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-034.png",
+      "imageUrl": "/images/tasks/lahutamine-47-miinus-20.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 34,
+          "pdfPage": 37,
+          "url": "/images/workbooks/part-I/pages/page-034.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7"
+        },
+        {
+          "kind": "task",
+          "page": 34,
+          "pdfPage": 37,
+          "url": "/images/tasks/lahutamine-47-miinus-20.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "aacb8381ff2c36cf4f4f0f21c972a39fed2ae5f67a546f3dfa9a9c175d88baa7",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "lahutamine-56-miinus-8",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 36,
+      "sourcePdfPageNumber": 39,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-036.png",
+      "imageUrl": "/images/tasks/lahutamine-56-miinus-8.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 36,
+          "pdfPage": 39,
+          "url": "/images/workbooks/part-I/pages/page-036.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66"
+        },
+        {
+          "kind": "task",
+          "page": 36,
+          "pdfPage": 39,
+          "url": "/images/tasks/lahutamine-56-miinus-8.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "92cdd3c3780f28fb029b38172463a96ac6ff064345fbccf7e968ecd36f676e66",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "lahutamine-35-miinus-19",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 38,
+      "sourcePdfPageNumber": 41,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-038.png",
+      "imageUrl": "/images/tasks/lahutamine-35-miinus-19.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 38,
+          "pdfPage": 41,
+          "url": "/images/workbooks/part-I/pages/page-038.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f"
+        },
+        {
+          "kind": "task",
+          "page": 38,
+          "pdfPage": 41,
+          "url": "/images/tasks/lahutamine-35-miinus-19.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "d4231398a6bd6987dc07dc1795c23d0650fd09a15fb9bcd01ffb9c77ff3e168f",
+          "crop": null
+        }
+      ]
+    },
+    {
+      "slug": "lahutamine-764-miinus-321",
+      "workbookPart": "I",
+      "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "sourcePageNumber": 40,
+      "sourcePdfPageNumber": 43,
+      "pageImageUrl": "/images/workbooks/part-I/pages/page-040.png",
+      "imageUrl": "/images/tasks/lahutamine-764-miinus-321.png",
+      "assets": [
+        {
+          "kind": "page",
+          "page": 40,
+          "pdfPage": 43,
+          "url": "/images/workbooks/part-I/pages/page-040.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b"
+        },
+        {
+          "kind": "task",
+          "page": 40,
+          "pdfPage": 43,
+          "url": "/images/tasks/lahutamine-764-miinus-321.png",
+          "sourcePdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+          "width": 1800,
+          "height": 1014,
+          "checksum": "3a51cc015d821581ec1fa982f4e74239ab18ff72698f2ebd58a76b7f347df15b",
+          "crop": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface Task {
@@ -48,17 +48,24 @@ export default function Home() {
 
   const isEt = lang === "et";
 
-  const fetchTasks = useCallback(async () => {
-    setLoading(true);
-    const res = await fetch(`/api/tasks?chapter=${chapter}`);
-    const data = await res.json();
-    setTasks(data.tasks ?? []);
-    setLoading(false);
-  }, [chapter]);
-
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    let ignore = false;
+
+    async function loadTasks() {
+      const res = await fetch(`/api/tasks?chapter=${chapter}`);
+      const data = await res.json();
+      if (!ignore) {
+        setTasks(data.tasks ?? []);
+        setLoading(false);
+      }
+    }
+
+    loadTasks();
+
+    return () => {
+      ignore = true;
+    };
+  }, [chapter]);
 
   const activeChapter = CHAPTERS.find((c) => c.value === chapter)!;
 
@@ -75,12 +82,20 @@ export default function Home() {
               {isEt ? "Mõtlemine nähtavaks! — Õpetaja abiline" : "Making Thinking Visible — Teacher Copilot"}
             </p>
           </div>
-          <button
-            onClick={() => setLang(isEt ? "en" : "et")}
-            className="text-sm px-3 py-1.5 rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100 transition-colors"
-          >
-            {isEt ? "EN" : "ET"}
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/workbook"
+              className="text-sm px-3 py-1.5 rounded-full bg-zinc-900 text-white hover:bg-zinc-700 transition-colors"
+            >
+              {isEt ? "Töövihik" : "Workbook"}
+            </Link>
+            <button
+              onClick={() => setLang(isEt ? "en" : "et")}
+              className="text-sm px-3 py-1.5 rounded-full border border-zinc-200 text-zinc-600 hover:bg-zinc-100 transition-colors"
+            >
+              {isEt ? "EN" : "ET"}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -92,6 +107,14 @@ export default function Home() {
               ? "Vali peatükk, et avada konkreetne tund. Iga tund sisaldab strateegiad, juhendamise nõuanded ja AI abilise."
               : "Select a chapter to open a specific lesson. Each lesson includes strategies, facilitation tips, and an AI coach."}
           </p>
+          <Link
+            href="/workbook"
+            className="inline-flex mt-4 text-sm font-medium text-blue-700 hover:text-blue-900"
+          >
+            {isEt
+              ? "Liigu läbi töövihiku ülesanne ülesande haaval →"
+              : "Walk through the workbook task by task →"}
+          </Link>
         </div>
 
         {/* Chapter tabs */}
@@ -99,7 +122,10 @@ export default function Home() {
           {CHAPTERS.map((ch) => (
             <button
               key={ch.value}
-              onClick={() => setChapter(ch.value)}
+              onClick={() => {
+                setLoading(true);
+                setChapter(ch.value);
+              }}
               className={`flex-1 py-3 px-4 rounded-2xl text-sm font-medium transition-all border ${
                 chapter === ch.value
                   ? "bg-zinc-900 text-white border-zinc-900"

@@ -36,6 +36,11 @@ interface Task {
   tags: string[];
   answer?: string;
   pageRef?: number;
+  workbookPart?: "I" | "II";
+  sourcePdfName?: string;
+  sourcePageNumber?: number;
+  sourcePdfPageNumber?: number;
+  pageImageUrl?: string;
   imageUrl?: string;
 }
 
@@ -268,6 +273,7 @@ function TaskPageInner({ slug }: { slug: string }) {
           "How do I respond to wrong answers?",
           "What is the compensation strategy?",
         ];
+  const primaryWorkbookImage = task.imageUrl ?? task.pageImageUrl;
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col">
@@ -320,7 +326,10 @@ function TaskPageInner({ slug }: { slug: string }) {
                 </span>
               </div>
               {task.pageRef && (
-                <span className="text-xs text-zinc-400 shrink-0">lk {task.pageRef}</span>
+                <span className="text-xs text-zinc-400 shrink-0">
+                  {task.workbookPart ? `${isEt ? "osa" : "part"} ${task.workbookPart} · ` : ""}
+                  lk {task.sourcePageNumber ?? task.pageRef}
+                </span>
               )}
             </div>
 
@@ -332,10 +341,10 @@ function TaskPageInner({ slug }: { slug: string }) {
 
                 {/* Task image area */}
                 <div className="rounded-2xl overflow-hidden bg-zinc-100 relative" style={{ minHeight: 240 }}>
-                  {task.imageUrl ? (
+                  {primaryWorkbookImage ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
-                      src={task.imageUrl}
+                      src={primaryWorkbookImage}
                       alt={isEt ? task.problemEt : task.problem}
                       className="w-full object-contain"
                       style={{ minHeight: 240 }}
@@ -369,7 +378,7 @@ function TaskPageInner({ slug }: { slug: string }) {
                     </div>
                   )}
                   {/* Replace image button */}
-                  {task.imageUrl && (
+                  {primaryWorkbookImage && (
                     <div className="absolute bottom-3 right-3">
                       <input
                         ref={taskImageInputRef}
@@ -414,6 +423,16 @@ function TaskPageInner({ slug }: { slug: string }) {
                     </summary>
                     <p className="mt-2 text-xl font-semibold text-emerald-700">{task.answer}</p>
                   </details>
+                )}
+                {primaryWorkbookImage && (
+                  <div className="mt-5 rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={primaryWorkbookImage}
+                      alt={isEt ? "Töövihiku lehekülg" : "Workbook page"}
+                      className="w-full object-contain"
+                    />
+                  </div>
                 )}
               </div>
             )}

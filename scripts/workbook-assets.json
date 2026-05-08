@@ -1,0 +1,38 @@
+{
+  "workbooks": {
+    "I": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I",
+      "pdfPath": "/Users/bashybaranaba/Desktop/Õpetaja juhendmaterjal_pdf.pdf",
+      "pdfName": "Õpetaja juhendmaterjal_pdf.pdf",
+      "pageCount": 48,
+      "outputDir": "public/images/workbooks/part-I"
+    },
+    "II": {
+      "title": "Mõtlemine nähtavaks! Õpetaja juhendmaterjal II",
+      "pdfPath": "/Users/bashybaranaba/Desktop/Õpetaja juhendmaterjal_II.pdf",
+      "pdfName": "Õpetaja juhendmaterjal_II.pdf",
+      "pageCount": 70,
+      "outputDir": "public/images/workbooks/part-II"
+    }
+  },
+  "tasks": [
+    { "slug": "loendamine-tapid", "workbookPart": "I", "page": 4, "pdfPage": 7 },
+    { "slug": "loendamine-ohupallid", "workbookPart": "I", "page": 6, "pdfPage": 9 },
+    { "slug": "loendamine-tammetoud", "workbookPart": "I", "page": 8, "pdfPage": 11 },
+    { "slug": "loendamine-lilleoied", "workbookPart": "I", "page": 10, "pdfPage": 13 },
+    { "slug": "loendamine-autod", "workbookPart": "I", "page": 12, "pdfPage": 15 },
+    { "slug": "loendamine-avokaadod", "workbookPart": "I", "page": 14, "pdfPage": 17 },
+    { "slug": "loendamine-marjad", "workbookPart": "I", "page": 16, "pdfPage": 19 },
+    { "slug": "loendamine-liblikad", "workbookPart": "I", "page": 18, "pdfPage": 21 },
+    { "slug": "liitmine-7-plus-6", "workbookPart": "I", "page": 21, "pdfPage": 24 },
+    { "slug": "liitmine-12-plus-17", "workbookPart": "I", "page": 23, "pdfPage": 26 },
+    { "slug": "liitmine-27-plus-35", "workbookPart": "I", "page": 25, "pdfPage": 28 },
+    { "slug": "liitmine-349-plus-36", "workbookPart": "I", "page": 27, "pdfPage": 30 },
+    { "slug": "liitmine-349-plus-156", "workbookPart": "I", "page": 29, "pdfPage": 32 },
+    { "slug": "lahutamine-19-miinus-6", "workbookPart": "I", "page": 32, "pdfPage": 35 },
+    { "slug": "lahutamine-47-miinus-20", "workbookPart": "I", "page": 34, "pdfPage": 37 },
+    { "slug": "lahutamine-56-miinus-8", "workbookPart": "I", "page": 36, "pdfPage": 39 },
+    { "slug": "lahutamine-35-miinus-19", "workbookPart": "I", "page": 38, "pdfPage": 41 },
+    { "slug": "lahutamine-764-miinus-321", "workbookPart": "I", "page": 40, "pdfPage": 43 }
+  ]
+}
