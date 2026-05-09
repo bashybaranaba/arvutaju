@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { ChangeEvent, FormEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, ReactNode, Ref, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Language = "et" | "en";
 
@@ -67,12 +67,20 @@ type RetrievalState = {
 
 type Copy = {
   promptPlaceholder: string;
+  promptHelper: string;
   attach: string;
+  removeImage: string;
+  imageReady: string;
   send: string;
+  sendDisabled: string;
+  emptyInput: string;
   searching: string;
   thinking: string;
+  contextError: string;
+  generateError: string;
+  imageError: string;
   assistantTitle: string;
-  assistantIntro: string;
+  emptyTitle: string;
   referencesTitle: string;
   noReferences: string;
   workbookReference: string;
@@ -81,7 +89,6 @@ type Copy = {
   generationNote: string;
   ruleAiTitle: string;
   ruleAiBody: string;
-  sourceImages: string;
   selectedReference: string;
   examples: string[];
   error: string;
@@ -89,15 +96,22 @@ type Copy = {
 
 const copyByLang: Record<Language, Copy> = {
   et: {
-    promptPlaceholder:
-      "Küsi töövihiku põhjal, lisa õpilase töö pilt või palu luua sarnane ülesanne...",
+    promptPlaceholder: "Kirjelda teemat või õpilase lahendust...",
+    promptHelper: "Kirjuta küsimus või lisa pilt. Saata saab siis, kui sisend ei ole tühi.",
     attach: "Lisa pilt",
+    removeImage: "Eemalda pilt",
+    imageReady: "Pilt on lisatud.",
     send: "Saada",
+    sendDisabled: "Kirjuta kõigepealt küsimus.",
+    emptyInput: "Kirjuta kõigepealt küsimus.",
     searching: "Otsin töövihikust sobivat konteksti...",
     thinking: "Koostan vastust...",
-    assistantTitle: "AI töövoog õpetajale",
-    assistantIntro:
-      "Kirjelda klassi, teemat või õpilase lahendust. Arvutaju otsib töövihikust lähima ülesande ja aitab kavandada lühikese arutelu, kus õpilaste mõttekäigud saavad nähtavaks.",
+    contextError:
+      "Töövihiku konteksti ei õnnestunud praegu leida. Võid siiski küsimuse saata.",
+    generateError: "Sarnaste ülesannete loomine ei õnnestunud. Proovi hetke pärast uuesti.",
+    imageError: "Pilti ei õnnestunud lugeda. Proovi teist faili.",
+    assistantTitle: "Vestlus",
+    emptyTitle: "Proovi alustuseks",
     referencesTitle: "Töövihiku kontekst",
     noReferences: "Sobiv kontekst ilmub siia pärast esimest küsimust.",
     workbookReference: "Ava töövihiku vaade",
@@ -108,7 +122,6 @@ const copyByLang: Record<Language, Copy> = {
     ruleAiTitle: "Reeglid + AI",
     ruleAiBody:
       "Valik ja kontroll on reeglipõhine: kasutame töövihiku ülesandeid, lehekülgi, strateegiaid ja olemasolevaid pilte. AI sõnastab õpetaja vastuse, aruteluküsimused ja uued tekstülesanded valitud konteksti järgi.",
-    sourceImages: "Töövihiku visuaalid",
     selectedReference: "Valitud kontekst",
     examples: [
       "4. klass, lahutamine arvteljel. Kuidas seda arutada?",
@@ -118,15 +131,22 @@ const copyByLang: Record<Language, Copy> = {
     error: "Midagi läks valesti. Palun proovi uuesti.",
   },
   en: {
-    promptPlaceholder:
-      "Ask from the workbook, attach student work, or request a similar task...",
+    promptPlaceholder: "Ask about a task or student strategy...",
+    promptHelper: "Write a question or attach an image. Send is available once there is something to review.",
     attach: "Attach image",
+    removeImage: "Remove image",
+    imageReady: "Image attached.",
     send: "Send",
+    sendDisabled: "Write a question first.",
+    emptyInput: "Write a question first.",
     searching: "Finding the closest workbook context...",
     thinking: "Writing a response...",
-    assistantTitle: "AI workflow for teachers",
-    assistantIntro:
-      "Describe the grade, topic, or student strategy. Arvutaju finds the closest workbook task and helps plan a short discussion where students' thinking becomes visible.",
+    contextError:
+      "I could not find workbook context just now. You can still send the question.",
+    generateError: "I could not create similar tasks just now. Please try again in a moment.",
+    imageError: "I could not read that image. Please try another file.",
+    assistantTitle: "Chat",
+    emptyTitle: "Try asking",
     referencesTitle: "Workbook context",
     noReferences: "A relevant context will appear here after your first question.",
     workbookReference: "Open workbook view",
@@ -137,7 +157,6 @@ const copyByLang: Record<Language, Copy> = {
     ruleAiTitle: "Rules + AI",
     ruleAiBody:
       "Selection and verification are rule-based: we use workbook tasks, pages, strategies, and existing source images. AI writes the teacher response, discussion questions, and new text tasks from the selected context.",
-    sourceImages: "Workbook visuals",
     selectedReference: "Selected context",
     examples: [
       "Grade 4, subtraction on a number line. How should I discuss it?",
@@ -165,35 +184,115 @@ export default function TeacherAssistantFlow({
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [generated, setGenerated] = useState<string[]>([]);
-  const [retrieval, setRetrieval] = useState<RetrievalState>(null);
+  const [, setRetrieval] = useState<RetrievalState>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isWorkbookExpanded, setIsWorkbookExpanded] = useState(true);
+  const [inputNotice, setInputNotice] = useState<string | null>(null);
+  const [contextNotice, setContextNotice] = useState<string | null>(null);
+  const [generateNotice, setGenerateNotice] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const latestUserMessageRef = useRef<HTMLDivElement>(null);
+  const selectedTaskSectionRef = useRef<HTMLDivElement>(null);
+  const generatedSectionRef = useRef<HTMLDivElement>(null);
+  const rightPaneRef = useRef<HTMLElement>(null);
+  const previousUserMessageCount = useRef(0);
   const didSendInitialPrompt = useRef(false);
+  const shouldScrollToSelectedTask = useRef(false);
+  const hasMeaningfulInput = input.trim().length > 0;
+  const canSubmit = (hasMeaningfulInput || Boolean(imageDataUrl)) && !isThinking && !isSearching;
 
   const visibleMessages = useMemo(
     () => messages.filter((message) => getMessageText(message.content).trim()),
     [messages],
   );
+  const userMessageCount = useMemo(
+    () => visibleMessages.filter((message) => message.role === "user").length,
+    [visibleMessages],
+  );
+
+  const scrollRightPaneToTarget = useCallback((target: HTMLElement | null) => {
+    const container = rightPaneRef.current;
+    if (!container || !target) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const top = container.scrollTop + targetRect.top - containerRect.top - 16;
+
+    container.scrollTo({
+      top: Math.max(0, top),
+      behavior: "smooth",
+    });
+  }, []);
+
+  const scrollRightPaneToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const container = rightPaneRef.current;
+        if (!container) return;
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: "smooth",
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (userMessageCount > previousUserMessageCount.current) {
+      requestAnimationFrame(() => {
+        latestUserMessageRef.current?.scrollIntoView({ block: "start" });
+      });
+    }
+
+    previousUserMessageCount.current = userMessageCount;
+  }, [userMessageCount]);
+
+  useEffect(() => {
+    if (generated.length === 0) return;
+
+    requestAnimationFrame(() => {
+      scrollRightPaneToTarget(generatedSectionRef.current);
+    });
+  }, [generated.length, scrollRightPaneToTarget]);
+
+  useEffect(() => {
+    if (!shouldScrollToSelectedTask.current || !selectedTask) return;
+
+    shouldScrollToSelectedTask.current = false;
+    requestAnimationFrame(() => {
+      scrollRightPaneToTarget(selectedTaskSectionRef.current);
+    });
+  }, [scrollRightPaneToTarget, selectedTask]);
 
   const findContext = useCallback(async (query: string): Promise<Task[]> => {
     try {
       const response = await fetch(`/api/tasks?q=${encodeURIComponent(query)}&sort=workbook`);
-      if (!response.ok) return [];
+      if (!response.ok) {
+        setContextNotice(copy.contextError);
+        return [];
+      }
       const data = await response.json();
+      setContextNotice(null);
       setRetrieval(data.retrieval ?? { mode: data.source ?? "unknown", count: data.tasks?.length ?? 0 });
       return (data.tasks ?? []).slice(0, MAX_RETRIEVED_TASKS);
     } catch {
+      setContextNotice(copy.contextError);
       return [];
     }
-  }, []);
+  }, [copy.contextError]);
 
   const sendPrompt = useCallback(async (promptText: string, promptImageDataUrl: string | null) => {
-    if ((!promptText.trim() && !promptImageDataUrl) || isThinking) return;
+    if (!promptText.trim() && !promptImageDataUrl) {
+      setInputNotice(copy.emptyInput);
+      return;
+    }
+    if (isThinking || isSearching) return;
 
     const trimmed = promptText.trim();
+    setInputNotice(null);
+    setContextNotice(null);
     setIsSearching(true);
     const contextTasks = await findContext(trimmed || (isEt ? "õpilase töö pilt" : "student work image"));
     setIsSearching(false);
@@ -244,7 +343,7 @@ export default function TeacherAssistantFlow({
     } finally {
       setIsThinking(false);
     }
-  }, [copy.error, findContext, isEt, isThinking, lang, messages, selectedTask, tasks]);
+  }, [copy.emptyInput, copy.error, findContext, isEt, isSearching, isThinking, lang, messages, selectedTask, tasks]);
 
   useEffect(() => {
     if (!initialPrompt || didSendInitialPrompt.current) return;
@@ -296,7 +395,11 @@ export default function TeacherAssistantFlow({
   async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const trimmed = input.trim();
-    if ((!trimmed && !imageDataUrl) || isThinking) return;
+    if (!trimmed && !imageDataUrl) {
+      setInputNotice(copy.emptyInput);
+      return;
+    }
+    if (isThinking || isSearching) return;
     await sendPrompt(trimmed, imageDataUrl);
   }
 
@@ -304,6 +407,7 @@ export default function TeacherAssistantFlow({
     if (!selectedTask || isGenerating) return;
     setIsGenerating(true);
     setGenerated([]);
+    setGenerateNotice(null);
 
     try {
       const response = await fetch("/api/generate", {
@@ -311,11 +415,20 @@ export default function TeacherAssistantFlow({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ taskSlug: selectedTask.slug, lang }),
       });
+      if (!response.ok) throw new Error("Generate failed");
       const data = await response.json();
       setGenerated(data.problems ?? []);
+    } catch {
+      setGenerateNotice(copy.generateError);
     } finally {
       setIsGenerating(false);
     }
+  }
+
+  function handleSelectTask(task: Task) {
+    shouldScrollToSelectedTask.current = true;
+    setSelectedTask(task);
+    setIsWorkbookExpanded(true);
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -324,8 +437,12 @@ export default function TeacherAssistantFlow({
 
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === "string") setImageDataUrl(reader.result);
+      if (typeof reader.result === "string") {
+        setImageDataUrl(reader.result);
+        setInputNotice(null);
+      }
     };
+    reader.onerror = () => setInputNotice(copy.imageError);
     reader.readAsDataURL(file);
     event.target.value = "";
   }
@@ -333,156 +450,204 @@ export default function TeacherAssistantFlow({
   return (
     <section
       id="alusta"
-      className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[24rem_minmax(0,1fr)]"
+      className="mx-auto grid max-w-7xl gap-4 lg:h-full lg:max-w-none lg:grid-cols-[minmax(20rem,0.92fr)_minmax(0,1.88fr)] lg:overflow-hidden lg:p-4"
     >
-      <aside className="lg:sticky lg:top-20">
-        <div className="flex h-[calc(100svh-6rem)] min-h-[42rem] flex-col rounded-[1.75rem] border border-[#eadfd4] bg-white p-4 shadow-lg shadow-[#b09cf0]/10">
-          <div className="border-b border-[#eadfd4] pb-4">
-            <h2 className="text-base font-semibold text-[#1b1b1f]">{copy.assistantTitle}</h2>
-            <p className="mt-1 text-xs leading-5 text-[#6c665f]">
-              {isEt
-                ? "Kasuta vestlust nähtava töövihiku materjali täpsustamiseks."
-                : "Use chat to explain and refine the visible workbook material."}
-            </p>
+      <aside className="lg:h-full lg:overflow-hidden">
+        <div className="flex h-[calc(100svh-6rem)] min-h-[42rem] flex-col rounded-[1.75rem] border border-[#eadfd4] bg-white shadow-lg shadow-[#b09cf0]/10 lg:h-full lg:min-h-0">
+          <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#eadfd4] px-4">
+            <h2 className="text-sm font-medium text-[#5f5b57]">{copy.assistantTitle}</h2>
+            {(isSearching || isThinking) && (
+              <span
+                className="rounded-full bg-[#f7f3ee] px-2.5 py-1 text-xs font-medium text-[#6c665f]"
+                role="status"
+                aria-live="polite"
+              >
+                {isSearching
+                  ? isEt ? "Otsin" : "Searching"
+                  : isEt ? "Kirjutan" : "Writing"}
+              </span>
+            )}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto py-3">
-            {visibleMessages.length === 0 ? (
-              <div className="space-y-2">
-                {copy.examples.map((example) => (
-                  <button
-                    key={example}
-                    type="button"
-                    onClick={() => setInput(example)}
-                    className="w-full rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-3 text-left text-sm leading-5 text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
-                  >
-                    {example}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {visibleMessages.map((message, index) => (
-                  <MessageBubble key={index} message={message} compact />
-                ))}
-              </div>
-            )}
-
-            {(isSearching || isThinking) && (
-              <p className="mt-3 text-sm font-medium text-[#7c63d8]">
-                {isSearching ? copy.searching : copy.thinking}
-              </p>
-            )}
-
-            {tasks.length > 0 && (
-              <div className="mt-3 border-t border-[#eadfd4] pt-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#7c63d8]">
-                  {isEt ? "Leitud töövihiku ülesanded" : "Retrieved workbook tasks"}
-                </p>
-                <div className="space-y-1.5">
-                  {tasks.map((task) => (
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+            <div className="flex min-h-full flex-col justify-end">
+              {visibleMessages.length === 0 ? (
+                <div className="space-y-3">
+                  <p className="text-xs font-medium text-[#8a8179]">{copy.emptyTitle}</p>
+                  {copy.examples.map((example) => (
                     <button
-                      key={task._id}
+                      key={example}
                       type="button"
-                      onClick={() => setSelectedTask(task)}
-                      className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
-                        selectedTask?._id === task._id
-                          ? "border-[#7c63d8] bg-[#f7f3ff]"
-                          : "border-[#eadfd4] bg-white hover:border-[#b09cf0]"
-                      }`}
+                      onClick={() => {
+                        setInput(example);
+                        setInputNotice(null);
+                      }}
+                      className="w-full rounded-xl border border-[#eadfd4] bg-[#fffaf4] px-3 py-2.5 text-left text-sm leading-5 text-[#5f5b57] transition-colors hover:border-[#fc6513] hover:bg-white hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
                     >
-                      <span className="line-clamp-1 block text-xs font-semibold text-[#1b1b1f]">
-                        {isEt ? task.titleEt : task.title}
-                      </span>
-                      <span className="mt-0.5 line-clamp-2 block text-[0.7rem] leading-4 text-[#6c665f]">
-                        {isEt ? task.problemEt : task.problem}
-                      </span>
-                      <span className="mt-1 block text-[0.68rem] font-medium text-[#7c63d8]">
-                        {pageLabel(task, isEt)}
-                      </span>
+                      {example}
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-3">
+                  {visibleMessages.map((message, index) => {
+                    const isLatestUserMessage =
+                      message.role === "user" &&
+                      visibleMessages
+                        .slice(index + 1)
+                        .every((nextMessage) => nextMessage.role !== "user");
+
+                    return (
+                      <MessageBubble
+                        key={index}
+                        message={message}
+                        compact
+                        messageRef={isLatestUserMessage ? latestUserMessageRef : undefined}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              {isThinking && (
+                <div className="mt-3 flex justify-start" aria-hidden="true">
+                  <span className="inline-flex items-center gap-1.5 rounded-2xl border border-[#eadfd4] bg-[#fffaf4] px-3 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#8a8179]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#8a8179]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#8a8179]" />
+                  </span>
+                </div>
+              )}
+
+              {contextNotice && (
+                <p
+                  className="mt-3 rounded-xl border border-[#eadfd4] bg-[#fffaf4] px-3 py-2 text-sm leading-5 text-[#5f5b57]"
+                  role="status"
+                >
+                  {contextNotice}
+                </p>
+              )}
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="border-t border-[#eadfd4] pt-3">
-            {imageDataUrl && (
-              <div className="mb-3 flex items-center gap-3 rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-2">
-                <img src={imageDataUrl} alt="" className="h-14 w-14 rounded-lg object-cover" />
-                <span className="flex-1 text-sm text-[#5f5b57]">{copy.attach}</span>
-                <button
-                  type="button"
-                  onClick={() => setImageDataUrl(null)}
-                  className="h-8 w-8 rounded-full text-[#8a8179] hover:bg-white"
-                  aria-label="Remove image"
-                >
-                  x
-                </button>
-              </div>
-            )}
-
+          <form onSubmit={handleSubmit} className="border-t border-[#eadfd4] px-4 py-3">
             <label htmlFor="teacher-prompt" className="sr-only">
               {copy.promptPlaceholder}
             </label>
-            <textarea
-              id="teacher-prompt"
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder={copy.promptPlaceholder}
-              className="min-h-24 w-full resize-none rounded-2xl border border-[#eadfd4] bg-white px-4 py-3 text-sm leading-6 text-[#1b1b1f] outline-none transition-colors placeholder:text-[#8a8179] focus:border-[#b09cf0]"
-            />
-
-            <div className="mt-3 flex items-center justify-between gap-3">
+            <div className="rounded-2xl border border-[#eadfd4] bg-[#fffaf4] p-2.5 transition-colors focus-within:border-[#fc6513] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ffd7bd] focus-within:ring-offset-2">
+              {imageDataUrl && (
+                <div className="mb-3 inline-flex items-start">
+                  <div className="relative">
+                    <img
+                      src={imageDataUrl}
+                      alt=""
+                      className="h-14 w-14 rounded-lg border border-[#eadfd4] bg-white object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImageDataUrl(null)}
+                      className="absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-semibold text-[#5f5b57] shadow-sm ring-1 ring-[#eadfd4] transition-colors hover:text-[#b83f05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd]"
+                      aria-label={copy.removeImage}
+                    >
+                      x
+                    </button>
+                  </div>
+                </div>
+              )}
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
+                aria-label={copy.attach}
                 className="hidden"
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex h-10 items-center rounded-full border border-[#eadfd4] px-4 text-sm font-semibold text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
-              >
-                {copy.attach}
-              </button>
-              <button
-                type="submit"
-                disabled={isThinking || (!input.trim() && !imageDataUrl)}
-                className="inline-flex h-10 items-center rounded-full bg-[#1b1b1f] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#34343a] disabled:cursor-not-allowed disabled:bg-[#b8b1aa]"
-              >
-                {copy.send}
-              </button>
+              <textarea
+                id="teacher-prompt"
+                value={input}
+                onChange={(event) => {
+                  setInput(event.target.value);
+                  setInputNotice(null);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    if (canSubmit) {
+                      void handleSubmit();
+                    } else {
+                      setInputNotice(copy.emptyInput);
+                    }
+                  }
+                }}
+                placeholder={copy.promptPlaceholder}
+                aria-describedby="teacher-prompt-helper teacher-prompt-status"
+                disabled={isThinking || isSearching}
+                className="min-h-9 max-h-28 w-full resize-none bg-transparent px-1.5 py-1 text-sm leading-5 text-[#1b1b1f] outline-none placeholder:text-[#8a8179] disabled:cursor-wait disabled:text-[#8a8179]"
+              />
+              <div className="mt-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isThinking || isSearching}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-lg font-medium text-[#5f5b57] transition-colors hover:bg-[#fff0e7] hover:text-[#b83f05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2 disabled:cursor-wait disabled:text-[#9a928a]"
+                  aria-label={copy.attach}
+                >
+                  +
+                </button>
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#fc6513] text-white transition-colors hover:bg-[#df560d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-[#d8d2cc] disabled:text-[#6c665f] disabled:hover:bg-[#d8d2cc]"
+                  aria-label={canSubmit ? copy.send : copy.sendDisabled}
+                >
+                  <SendIcon />
+                </button>
+              </div>
             </div>
+            <p id="teacher-prompt-helper" className="sr-only">
+              {copy.promptHelper}
+            </p>
+            {inputNotice && (
+              <p
+                id="teacher-prompt-status"
+                className="mt-3 rounded-lg border border-[#ffd7bd] bg-[#fff6ef] px-3 py-2 text-xs leading-5 text-[#8f3508]"
+                role="alert"
+              >
+                {inputNotice}
+              </p>
+            )}
           </form>
         </div>
       </aside>
 
-      <main className="space-y-4">
-        {tasks.length > 0 && (
-          <TaskContextStrip
-            tasks={tasks}
-            selectedTask={selectedTask}
-            isEt={isEt}
-            onSelect={setSelectedTask}
-          />
-        )}
-
+      <main ref={rightPaneRef} className="space-y-4 scroll-smooth lg:h-full lg:overflow-y-auto">
         {selectedTask ? (
-          <WorkbookMaterial
-            task={selectedTask}
-            isEt={isEt}
-            generated={generated}
-            isGenerating={isGenerating}
-            copy={copy}
-            retrieval={retrieval}
-            isWorkbookExpanded={isWorkbookExpanded}
-            onToggleWorkbook={() => setIsWorkbookExpanded((value) => !value)}
-            onGenerate={generateSimilarTasks}
-          />
+          <>
+            <div ref={selectedTaskSectionRef}>
+              <WorkbookMaterial
+                task={selectedTask}
+                isEt={isEt}
+                generated={generated}
+                isGenerating={isGenerating}
+                generateNotice={generateNotice}
+                copy={copy}
+                generatedSectionRef={generatedSectionRef}
+                isWorkbookExpanded={isWorkbookExpanded}
+                onToggleWorkbook={() => setIsWorkbookExpanded((value) => !value)}
+                onGenerate={generateSimilarTasks}
+              />
+            </div>
+
+            {tasks.length > 1 && (
+              <TaskContextStrip
+                tasks={tasks}
+                selectedTask={selectedTask}
+                isEt={isEt}
+                onSelect={handleSelectTask}
+                onOpen={scrollRightPaneToBottom}
+              />
+            )}
+          </>
         ) : (
           <StarterWorkbookPanel
             examples={copy.examples}
@@ -501,45 +666,61 @@ function TaskContextStrip({
   selectedTask,
   isEt,
   onSelect,
+  onOpen,
 }: {
   tasks: Task[];
   selectedTask: Task | null;
   isEt: boolean;
   onSelect: (task: Task) => void;
+  onOpen: () => void;
 }) {
+  const otherTasks = selectedTask
+    ? tasks.filter((task) => task._id !== selectedTask._id)
+    : tasks;
+
+  if (otherTasks.length === 0) return null;
+
   return (
-    <div className="rounded-2xl border border-[#eadfd4] bg-white/90 p-2">
-      <div className="mb-2 flex items-center justify-between px-1">
-        <p className="text-xs font-semibold uppercase text-[#7c63d8]">
-          {isEt ? "Leitud töövihiku ülesanded" : "Retrieved workbook tasks"}
-        </p>
-        <p className="text-xs text-[#8a8179]">{tasks.length}</p>
-      </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {tasks.map((task) => (
+    <details
+      className="group overflow-hidden rounded-[1.75rem] border border-[#eadfd4] bg-white shadow-lg shadow-[#b09cf0]/10"
+      onToggle={(event) => {
+        if (!event.currentTarget.open) return;
+        onOpen();
+      }}
+    >
+      <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2">
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="block text-sm font-semibold text-[#1b1b1f]">
+            {isEt ? "Teised võimalikud vasted" : "Other possible matches"}
+          </span>
+          <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#fff0e7] px-1.5 text-xs font-semibold text-[#b83f05]">
+            {otherTasks.length}
+          </span>
+        </span>
+        <ChevronDownIcon />
+      </summary>
+
+      <div className="grid gap-3 border-t border-[#eadfd4] bg-[#fffaf4] p-4 sm:grid-cols-2 xl:grid-cols-3">
+        {otherTasks.map((task) => (
           <button
             key={task._id}
             type="button"
             onClick={() => onSelect(task)}
-            className={`min-w-[11rem] rounded-lg border px-3 py-2 text-left transition-colors ${
-              selectedTask?._id === task._id
-                ? "border-[#7c63d8] bg-[#f7f3ff]"
-                : "border-[#eadfd4] bg-white hover:border-[#b09cf0]"
-            }`}
+            className="grid min-h-[9rem] grid-rows-[auto_1fr_auto] rounded-xl border border-[#eadfd4] bg-white px-4 py-3 text-left transition-colors hover:border-[#fc6513] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
           >
             <span className="line-clamp-1 block text-xs font-semibold text-[#1b1b1f]">
               {isEt ? task.titleEt : task.title}
             </span>
-            <span className="mt-1 line-clamp-1 block text-[0.7rem] leading-4 text-[#6c665f]">
+            <span className="mt-1 line-clamp-3 block text-[0.7rem] leading-4 text-[#6c665f]">
               {isEt ? task.problemEt : task.problem}
             </span>
-            <span className="mt-1 block text-[0.68rem] font-medium text-[#7c63d8]">
+            <span className="mt-2 block text-[0.68rem] font-medium text-[#b83f05]">
               {pageLabel(task, isEt)}
             </span>
           </button>
         ))}
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -555,20 +736,20 @@ function StarterWorkbookPanel({
   searchingLabel: string;
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-[#eadfd4] bg-white p-5">
+    <div className="rounded-[1.75rem] border border-[#eadfd4] bg-white p-5 shadow-lg shadow-[#b09cf0]/10">
       <div className="grid gap-3 sm:grid-cols-3">
         {examples.map((example) => (
           <button
             key={example}
             type="button"
             onClick={() => onExample(example)}
-            className="min-h-28 rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-4 text-left text-sm leading-6 text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
+            className="min-h-28 rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-4 text-left text-sm leading-6 text-[#5f5b57] transition-colors hover:border-[#fc6513] hover:bg-white hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
           >
             {example}
           </button>
         ))}
       </div>
-      {isSearching && <p className="mt-4 text-sm font-medium text-[#7c63d8]">{searchingLabel}</p>}
+      {isSearching && <p className="mt-4 text-sm font-medium text-[#b83f05]">{searchingLabel}</p>}
     </div>
   );
 }
@@ -578,8 +759,9 @@ function WorkbookMaterial({
   isEt,
   generated,
   isGenerating,
+  generateNotice,
   copy,
-  retrieval,
+  generatedSectionRef,
   isWorkbookExpanded,
   onToggleWorkbook,
   onGenerate,
@@ -588,8 +770,9 @@ function WorkbookMaterial({
   isEt: boolean;
   generated: string[];
   isGenerating: boolean;
+  generateNotice: string | null;
   copy: Copy;
-  retrieval: RetrievalState;
+  generatedSectionRef: Ref<HTMLDivElement>;
   isWorkbookExpanded: boolean;
   onToggleWorkbook: () => void;
   onGenerate: () => void;
@@ -597,47 +780,36 @@ function WorkbookMaterial({
   const images = getSourceImages(task);
   const primaryImage = images.find((image) => image.kind === "task") ?? images[0];
   const strategyImages = images.filter((image) => image.url !== primaryImage?.url);
+  const primaryStrategyImage = strategyImages[0];
   const misconceptions = isEt ? task.commonMisconceptionsEt : task.commonMisconceptions;
   const [openDialog, setOpenDialog] = useState<"strategies" | "watch" | null>(null);
 
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-[1.75rem] border border-[#eadfd4] bg-white shadow-lg shadow-[#b09cf0]/10">
-        <div className="flex flex-col gap-3 border-b border-[#eadfd4] px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase text-[#7c63d8]">
-              {isEt ? "Töövihiku ülesanne" : "Workbook task"}
+        <div className="flex flex-col gap-3 border-b border-[#eadfd4] px-5 py-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-[#8a8179]">
+              {isEt ? "Valitud töövihiku ülesanne" : "Selected workbook task"}
             </p>
-            <h1 className="mt-1 text-xl font-semibold text-[#1b1b1f]">
+            <h1 className="mt-1 text-lg font-semibold leading-6 text-[#1b1b1f]">
               {isEt ? task.titleEt : task.title}
             </h1>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-[#5f5b57]">
+            <p className="mt-1 max-w-3xl line-clamp-2 text-sm leading-5 text-[#5f5b57]">
               {isEt ? task.problemEt : task.problem}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <Badge>{pageLabel(task, isEt) || "Arvutaju"}</Badge>
               <Badge>{isEt ? `${task.gradeMin}-${task.gradeMax} klass` : `Grades ${task.gradeMin}-${task.gradeMax}`}</Badge>
-              <Badge>{task.operation}</Badge>
-              <Badge>{task.difficulty}</Badge>
-              {typeof task.score === "number" && (
-                <Badge>{isEt ? "sobivus" : "match"} {Math.round(task.score * 100)}%</Badge>
-              )}
-              {retrieval && (
-                <Badge>
-                  {retrieval.mode === "vector"
-                    ? isEt ? "vektorotsing" : "vector search"
-                    : isEt ? "varuotsing" : "fallback search"}
-                </Badge>
-              )}
             </div>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
             <button
               type="button"
               onClick={onToggleWorkbook}
-              className="inline-flex h-9 items-center rounded-full border border-[#eadfd4] px-3 text-xs font-semibold text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
+              className="inline-flex h-9 items-center rounded-full border border-[#eadfd4] px-3 text-xs font-semibold text-[#5f5b57] transition-colors hover:border-[#fc6513] hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
             >
-              {isWorkbookExpanded ? (isEt ? "Minimeeri" : "Minimize") : (isEt ? "Laienda" : "Expand")}
+              {isWorkbookExpanded ? (isEt ? "Peida" : "Hide") : (isEt ? "Näita" : "Show")}
             </button>
             <TeacherSupportPopover
               label={isEt ? "Õpetaja tugi" : "Teacher support"}
@@ -648,7 +820,8 @@ function WorkbookMaterial({
               type="button"
               onClick={onGenerate}
               disabled={isGenerating}
-              className="inline-flex h-9 items-center rounded-full bg-[#fc6513] px-3 text-xs font-semibold text-white transition-colors hover:bg-[#df560d] disabled:cursor-wait disabled:bg-[#f2a57a]"
+              className="inline-flex h-9 items-center rounded-full bg-[#fc6513] px-3 text-xs font-semibold text-white transition-colors hover:bg-[#df560d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2 disabled:cursor-wait disabled:bg-[#d8d2cc] disabled:text-[#6c665f]"
+              aria-label={copy.generateSimilar}
             >
               {isGenerating ? copy.thinking : copy.generateSimilar}
             </button>
@@ -656,41 +829,24 @@ function WorkbookMaterial({
         </div>
 
         {isWorkbookExpanded && (
-          <div className="grid gap-4 bg-[#fffaf4] p-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
-            <div className="rounded-xl border border-[#eadfd4] bg-white p-3">
-              {primaryImage ? (
-                <img
-                  src={primaryImage.url}
-                  alt={primaryImage.label ?? (isEt ? task.titleEt : task.title)}
-                  className="max-h-[44rem] w-full rounded-lg object-contain"
-                />
-              ) : (
-                <div className="flex min-h-80 items-center justify-center rounded-xl border border-dashed border-[#d9cec3] text-sm text-[#8a8179]">
-                  {isEt ? "Töövihiku pilti ei leitud." : "No workbook image found."}
-                </div>
-              )}
+          <div className="space-y-4 bg-[#fffaf4] p-4">
+            <div className="grid gap-4 xl:grid-cols-2">
+              <WorkbookImageCard
+                label={isEt ? "Töövihiku ülesande pilt" : "Workbook task image"}
+                image={primaryImage}
+                alt={primaryImage?.label ?? (isEt ? task.titleEt : task.title)}
+                emptyText={isEt ? "Töövihiku pilti ei leitud." : "No workbook image found."}
+              />
+
+              <WorkbookImageCard
+                label={isEt ? "Kontrollitud strateegiavisuaal" : "Verified strategy visual"}
+                image={primaryStrategyImage}
+                alt={primaryStrategyImage?.label ?? (isEt ? task.titleEt : task.title)}
+                emptyText={isEt ? "Kontrollitud strateegiavisuaali ei leitud." : "No verified strategy visual found."}
+              />
             </div>
 
-            <div className="space-y-4">
-              {strategyImages.length > 0 && (
-                <CollapsibleCard
-                  title={copy.sourceImages}
-                  defaultOpen
-                  summary={isEt ? "Töövihiku visuaalne strateegiatugi" : "Verified workbook strategy visuals"}
-                >
-                  <div className="grid gap-3">
-                    {strategyImages.slice(0, 3).map((image) => (
-                      <img
-                        key={image.url}
-                        src={image.url}
-                        alt={image.label ?? (isEt ? task.titleEt : task.title)}
-                        className="max-h-[24rem] w-full rounded-xl border border-[#eadfd4] bg-[#fffaf4] object-contain"
-                      />
-                    ))}
-                  </div>
-                </CollapsibleCard>
-              )}
-
+            <div className="grid gap-3 sm:grid-cols-2">
               <DialogLaunchCard
                 title={isEt ? "Võimalikud strateegiad" : "Possible strategies"}
                 hint={isEt ? `${task.strategies.length} strateegiat` : `${task.strategies.length} strategies`}
@@ -719,11 +875,10 @@ function WorkbookMaterial({
           onClose={() => setOpenDialog(null)}
         >
           <div className="grid gap-3 md:grid-cols-2">
-            {task.strategies.map((strategy, index) => (
+            {task.strategies.map((strategy) => (
               <StrategyVisualCard
                 key={strategy.name}
                 strategy={strategy}
-                index={index}
                 isEt={isEt}
               />
             ))}
@@ -739,11 +894,10 @@ function WorkbookMaterial({
           onClose={() => setOpenDialog(null)}
         >
           <div className="grid gap-3 md:grid-cols-2">
-            {misconceptions.slice(0, 6).map((misconception, index) => (
+            {misconceptions.slice(0, 6).map((misconception) => (
               <WatchForVisualCard
                 key={misconception}
                 text={misconception}
-                index={index}
                 isEt={isEt}
               />
             ))}
@@ -751,36 +905,37 @@ function WorkbookMaterial({
         </WorkbookDialog>
       )}
 
+      {generateNotice && (
+        <div
+          className="rounded-[1.25rem] border border-[#ffd7bd] bg-[#fff6ef] px-4 py-3 text-sm leading-6 text-[#8f3508]"
+          role="alert"
+        >
+          {generateNotice}
+        </div>
+      )}
+
       {generated.length > 0 && (
-        <div className="rounded-[1.75rem] border border-[#eadfd4] bg-white p-5">
+        <div ref={generatedSectionRef} className="rounded-[1.75rem] border border-[#eadfd4] bg-white p-5 shadow-lg shadow-[#b09cf0]/10">
           <h2 className="text-sm font-semibold text-[#1b1b1f]">{copy.generatedTitle}</h2>
-          <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
-            <ol className="grid gap-2 text-sm leading-6 text-[#5f5b57]">
-              {generated.map((item) => (
-                <GeneratedTaskCard
-                  key={item}
-                  text={item}
-                  task={task}
-                  isEt={isEt}
-                />
-              ))}
-            </ol>
-            <div className="rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-3">
-              <p className="text-xs font-semibold uppercase text-[#7c63d8]">
-                {isEt ? "Visuaalne põhimõte" : "Visual principle"}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-[#6c665f]">
-                {copy.generationNote}
-              </p>
-              {primaryImage && (
-                <img
-                  src={primaryImage.url}
-                  alt=""
-                  className="mt-3 max-h-48 w-full rounded-lg object-contain"
-                />
-              )}
-            </div>
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-[#6c665f]">
+            {copy.generationNote}
+          </p>
+          <div className="mt-4">
+            <WorkbookImageCard
+              label={isEt ? "Uute ülesannete visuaalne juhis" : "Visual guide for new tasks"}
+              image={primaryImage}
+              alt={primaryImage?.label ?? (isEt ? task.titleEt : task.title)}
+              emptyText={isEt ? "Visuaalset juhist ei leitud." : "No visual guide found."}
+            />
           </div>
+          <ol className="mt-4 grid gap-3 lg:grid-cols-3">
+            {generated.map((item) => (
+              <GeneratedTaskCard
+                key={item}
+                text={item}
+              />
+            ))}
+          </ol>
         </div>
       )}
     </div>
@@ -792,6 +947,39 @@ function Badge({ children }: { children: ReactNode }) {
     <span className="inline-flex items-center rounded-md bg-[#f7efe7] px-2.5 py-1 text-xs font-medium text-[#5f5b57]">
       {children}
     </span>
+  );
+}
+
+function WorkbookImageCard({
+  label,
+  image,
+  alt,
+  emptyText,
+}: {
+  label: string;
+  image?: { url: string; label?: string };
+  alt: string;
+  emptyText: string;
+}) {
+  return (
+    <div className="grid h-[25rem] grid-rows-[1.25rem_minmax(0,1fr)] gap-2 rounded-xl border border-[#eadfd4] bg-white p-3">
+      <p className="truncate px-1 text-sm font-medium leading-5 text-[#6c665f]">
+        {label}
+      </p>
+      {image ? (
+        <div className="flex min-h-0 items-center justify-center overflow-hidden rounded-lg bg-[#fffaf4]">
+          <img
+            src={image.url}
+            alt={alt}
+            className="max-h-full w-full object-contain"
+          />
+        </div>
+      ) : (
+        <div className="flex min-h-0 items-center justify-center rounded-lg border border-dashed border-[#d9cec3] px-4 text-center text-sm leading-6 text-[#8a8179]">
+          {emptyText}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -807,14 +995,14 @@ function TeacherSupportPopover({
   return (
     <details className="group relative">
       <summary
-        className="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-[#eadfd4] text-sm font-semibold text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
+        className="inline-flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-[#eadfd4] text-sm font-semibold text-[#5f5b57] transition-colors hover:border-[#fc6513] hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
         title={`${label}: ${content}`}
         aria-label={label}
       >
         ?
       </summary>
       <div className="absolute right-0 z-20 mt-2 w-80 rounded-xl border border-[#eadfd4] bg-white p-4 text-sm leading-6 text-[#5f5b57] shadow-lg shadow-[#b09cf0]/10">
-        <p className="mb-2 text-xs font-semibold uppercase text-[#7c63d8]">
+        <p className="mb-2 text-xs font-semibold uppercase text-[#b83f05]">
           {isEt ? "Õpetaja tugi" : "Teacher support"}
         </p>
         {content}
@@ -838,13 +1026,13 @@ function DialogLaunchCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex h-12 w-full items-center justify-between gap-3 rounded-xl border border-[#eadfd4] bg-white px-3 text-left transition-colors hover:border-[#b09cf0]"
+      className="flex min-h-16 w-full items-center justify-between gap-3 rounded-xl border border-[#eadfd4] bg-white px-4 py-3 text-left transition-colors hover:border-[#fc6513] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
     >
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-[#1b1b1f]">{title}</span>
-        <span className="block text-xs text-[#8a8179]">{hint}</span>
+        <span className="block truncate text-sm font-semibold leading-5 text-[#1b1b1f]">{title}</span>
+        <span className="mt-1 block text-xs leading-4 text-[#8a8179]">{hint}</span>
       </span>
-      <span className="shrink-0 text-xs font-semibold text-[#7c63d8]">
+      <span className="shrink-0 text-xs font-semibold text-[#b83f05]">
         {actionLabel}
       </span>
     </button>
@@ -864,6 +1052,15 @@ function WorkbookDialog({
   onClose: () => void;
   children: ReactNode;
 }) {
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[#1b1b1f]/35 p-4"
@@ -873,7 +1070,7 @@ function WorkbookDialog({
       onClick={onClose}
     >
       <div
-        className="max-h-[86svh] w-full max-w-4xl overflow-hidden rounded-[1.5rem] border border-[#eadfd4] bg-white shadow-2xl shadow-[#1b1b1f]/20"
+        className="w-full max-w-3xl overflow-hidden rounded-[1.5rem] border border-[#eadfd4] bg-white shadow-2xl shadow-[#1b1b1f]/20"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 border-b border-[#eadfd4] px-5 py-4">
@@ -886,12 +1083,12 @@ function WorkbookDialog({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-9 items-center rounded-full border border-[#eadfd4] px-3 text-xs font-semibold text-[#5f5b57] transition-colors hover:border-[#b09cf0] hover:text-[#1b1b1f]"
+            className="inline-flex h-9 items-center rounded-full border border-[#eadfd4] px-3 text-xs font-semibold text-[#5f5b57] transition-colors hover:border-[#fc6513] hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
           >
             {closeLabel}
           </button>
         </div>
-        <div className="max-h-[calc(86svh-6rem)] overflow-y-auto bg-[#fffaf4] p-4">
+        <div className="max-h-[calc(100svh-13rem)] overflow-y-auto bg-[#fffaf4] p-4">
           {children}
         </div>
       </div>
@@ -899,310 +1096,121 @@ function WorkbookDialog({
   );
 }
 
-function CollapsibleCard({
-  title,
-  summary,
-  defaultOpen = false,
-  children,
-}: {
-  title: string;
-  summary?: string;
-  defaultOpen?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <details
-      {...(defaultOpen ? { open: true } : {})}
-      className="group rounded-xl border border-[#eadfd4] bg-white p-3"
-    >
-      <summary className="cursor-pointer list-none">
-        <span className="flex items-start justify-between gap-3">
-          <span>
-            <span className="block text-sm font-semibold text-[#1b1b1f]">{title}</span>
-            {summary && (
-              <span className="mt-1 line-clamp-2 block text-xs leading-5 text-[#8a8179]">
-                {summary}
-              </span>
-            )}
-          </span>
-          <span className="text-sm font-semibold text-[#7c63d8] group-open:rotate-180">⌄</span>
-        </span>
-      </summary>
-      <div className="mt-3">{children}</div>
-    </details>
-  );
-}
-
 function StrategyVisualCard({
   strategy,
-  index,
   isEt,
 }: {
   strategy: Strategy;
-  index: number;
   isEt: boolean;
 }) {
   return (
-    <div className="grid min-h-44 grid-rows-[5rem_1fr] overflow-hidden rounded-xl border border-[#eadfd4] bg-[#fffaf4]">
-      <StrategyMiniVisual index={index} />
-      <div className="p-3">
-        <p className="text-sm font-semibold text-[#1b1b1f]">
-          {isEt ? strategy.nameEt : strategy.name}
-        </p>
-        <p className="mt-1 line-clamp-3 text-xs leading-5 text-[#5f5b57]">
-          {isEt ? strategy.descriptionEt : strategy.description}
-        </p>
-        {strategy.example && (
-          <p className="mt-2 rounded-lg bg-white px-2.5 py-2 text-[0.7rem] font-medium leading-4 text-[#6c665f]">
-            {strategy.example}
-          </p>
-        )}
-      </div>
+    <div className="flex flex-col rounded-xl border border-[#eadfd4] bg-white p-4">
+      <p className="text-sm font-semibold leading-5 text-[#1b1b1f]">
+        {isEt ? strategy.nameEt : strategy.name}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-[#5f5b57]">
+        {isEt ? strategy.descriptionEt : strategy.description}
+      </p>
     </div>
-  );
-}
-
-function StrategyMiniVisual({ index }: { index: number }) {
-  const variant = index % 4;
-
-  if (variant === 0) {
-    return (
-      <svg viewBox="0 0 220 80" className="h-20 w-full bg-white" role="img" aria-label="strategy visual">
-        <rect x="16" y="18" width="48" height="20" rx="6" fill="#f7efe7" stroke="#1b1b1f" />
-        <rect x="78" y="18" width="48" height="20" rx="6" fill="#f7efe7" stroke="#1b1b1f" />
-        <rect x="140" y="18" width="48" height="20" rx="6" fill="#f7efe7" stroke="#1b1b1f" />
-        <path d="M40 50 C70 68 134 68 164 50" fill="none" stroke="#fc6513" strokeWidth="4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (variant === 1) {
-    return (
-      <svg viewBox="0 0 220 80" className="h-20 w-full bg-white" role="img" aria-label="strategy visual">
-        <line x1="22" y1="48" x2="198" y2="48" stroke="#1b1b1f" strokeWidth="2" />
-        <path d="M48 48 Q76 18 104 48" fill="none" stroke="#7c63d8" strokeWidth="4" strokeLinecap="round" />
-        <path d="M104 48 Q132 18 160 48" fill="none" stroke="#fc6513" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="48" cy="48" r="4" fill="#1b1b1f" />
-        <circle cx="104" cy="48" r="4" fill="#1b1b1f" />
-        <circle cx="160" cy="48" r="4" fill="#1b1b1f" />
-      </svg>
-    );
-  }
-
-  if (variant === 2) {
-    const dots = Array.from({ length: 12 }, (_, dotIndex) => (
-      <circle
-        key={dotIndex}
-        cx={66 + (dotIndex % 4) * 22}
-        cy={22 + Math.floor(dotIndex / 4) * 16}
-        r="4"
-        fill="#1b1b1f"
-      />
-    ));
-    return (
-      <svg viewBox="0 0 220 80" className="h-20 w-full bg-white" role="img" aria-label="strategy visual">
-        <rect x="54" y="12" width="98" height="56" rx="12" fill="#fffaf4" stroke="#eadfd4" />
-        {dots}
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 220 80" className="h-20 w-full bg-white" role="img" aria-label="strategy visual">
-      <circle cx="68" cy="40" r="20" fill="#f7efe7" stroke="#1b1b1f" />
-      <circle cx="110" cy="40" r="20" fill="#f7efe7" stroke="#1b1b1f" />
-      <circle cx="152" cy="40" r="20" fill="#f7efe7" stroke="#1b1b1f" />
-      <path d="M68 40 H152" stroke="#fc6513" strokeWidth="4" strokeLinecap="round" />
-    </svg>
   );
 }
 
 function WatchForVisualCard({
   text,
-  index,
   isEt,
 }: {
   text: string;
-  index: number;
   isEt: boolean;
 }) {
   return (
-    <div className="grid min-h-32 grid-cols-[4.25rem_minmax(0,1fr)] overflow-hidden rounded-xl border border-[#eadfd4] bg-[#fffaf4]">
-      <div className="flex items-center justify-center bg-white">
-        <WatchMiniVisual index={index} />
-      </div>
-      <div className="p-3">
-        <p className="text-[0.68rem] font-semibold uppercase text-[#7c63d8]">
-          {isEt ? "Jälgi" : "Watch"}
-        </p>
-        <p className="mt-1 line-clamp-4 text-xs leading-5 text-[#5f5b57]">{text}</p>
-      </div>
+    <div className="flex flex-col rounded-xl border border-[#eadfd4] bg-white p-4">
+      <p className="text-xs font-semibold leading-5 text-[#b83f05]">
+        {isEt ? "Jälgi" : "Watch"}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-[#5f5b57]">{text}</p>
     </div>
   );
 }
 
-function WatchMiniVisual({ index }: { index: number }) {
-  const colors = ["#fc6513", "#7c63d8", "#1b1b1f", "#b86b28"];
-  const color = colors[index % colors.length];
-
-  return (
-    <svg viewBox="0 0 56 56" className="h-12 w-12" role="img" aria-label="watch for visual">
-      <circle cx="28" cy="28" r="24" fill="#fffaf4" stroke="#eadfd4" />
-      <path d="M28 12 L44 42 H12 Z" fill="white" stroke={color} strokeWidth="3" strokeLinejoin="round" />
-      <line x1="28" y1="23" x2="28" y2="32" stroke={color} strokeWidth="3" strokeLinecap="round" />
-      <circle cx="28" cy="38" r="2" fill={color} />
-    </svg>
-  );
-}
-
-type GeneratedVisual =
-  | { kind: "dots"; count: number }
-  | { kind: "number-line"; start: number; step: number; end: number }
-  | { kind: "array"; rows: number; columns: number }
-  | null;
-
 function GeneratedTaskCard({
   text,
-  task,
-  isEt,
 }: {
   text: string;
-  task: Task;
-  isEt: boolean;
 }) {
-  const visual = buildGeneratedVisual(text, task);
-
   return (
-    <li className="grid gap-3 rounded-xl border border-[#eadfd4] bg-[#fffaf4] px-4 py-3 md:grid-cols-[minmax(0,1fr)_12rem]">
+    <li className="flex min-h-40 flex-col rounded-xl border border-[#eadfd4] bg-[#fffaf4] p-4 text-sm leading-6 text-[#5f5b57]">
       <MarkdownText text={text} />
-      <div className="rounded-lg border border-[#eadfd4] bg-white p-2">
-        <p className="mb-2 text-[0.68rem] font-semibold uppercase text-[#7c63d8]">
-          {isEt ? "Reeglipõhine pilt" : "Rule-based visual"}
-        </p>
-        {visual ? (
-          <RuleBasedVisual visual={visual} />
-        ) : (
-          <p className="text-xs leading-5 text-[#6c665f]">
-            {isEt
-              ? "Arvud ei ole piisavalt üheselt loetavad. Kasuta kontrollitud töövihiku visuaali või deterministlikku malligeneraatorit."
-              : "The numbers are not unambiguous enough. Use the verified workbook visual or a deterministic template renderer."}
-          </p>
-        )}
-      </div>
     </li>
   );
 }
 
-function RuleBasedVisual({ visual }: { visual: Exclude<GeneratedVisual, null> }) {
-  if (visual.kind === "dots") {
-    const cols = Math.min(10, Math.ceil(Math.sqrt(visual.count)));
-    const dots = Array.from({ length: visual.count }, (_, dotIndex) => {
-      const x = 16 + (dotIndex % cols) * 16;
-      const y = 18 + Math.floor(dotIndex / cols) * 16;
-      return <circle key={dotIndex} cx={x} cy={y} r="4" fill="#1b1b1f" />;
-    });
-    const height = Math.max(56, 34 + Math.ceil(visual.count / cols) * 16);
-    return (
-      <svg viewBox={`0 0 180 ${height}`} className="h-28 w-full" role="img" aria-label={`${visual.count} dots`}>
-        <rect width="180" height={height} rx="10" fill="#fffaf4" />
-        {dots}
-      </svg>
-    );
-  }
-
-  if (visual.kind === "array") {
-    const cell = 14;
-    const width = 28 + visual.columns * cell;
-    const height = 28 + visual.rows * cell;
-    const dots = Array.from({ length: visual.rows * visual.columns }, (_, dotIndex) => {
-      const x = 14 + (dotIndex % visual.columns) * cell;
-      const y = 14 + Math.floor(dotIndex / visual.columns) * cell;
-      return <circle key={dotIndex} cx={x} cy={y} r="3.5" fill="#1b1b1f" />;
-    });
-    return (
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-28 w-full" role="img" aria-label={`${visual.rows} by ${visual.columns} array`}>
-        <rect width={width} height={height} rx="10" fill="#fffaf4" />
-        {dots}
-      </svg>
-    );
-  }
-
-  const isSubtraction = visual.step < 0;
-  const min = Math.min(visual.start, visual.end);
-  const max = Math.max(visual.start, visual.end);
-  const span = Math.max(1, max - min);
-  const startX = 18 + ((visual.start - min) / span) * 134;
-  const endX = 18 + ((visual.end - min) / span) * 134;
-  const arcPath = `M ${startX} 48 Q ${(startX + endX) / 2} ${isSubtraction ? 18 : 14} ${endX} 48`;
-
-  return (
-    <svg viewBox="0 0 180 88" className="h-28 w-full" role="img" aria-label={`${visual.start} ${visual.step} ${visual.end}`}>
-      <rect width="180" height="88" rx="10" fill="#fffaf4" />
-      <line x1="18" y1="48" x2="162" y2="48" stroke="#1b1b1f" strokeWidth="2" />
-      <path d={arcPath} fill="none" stroke={isSubtraction ? "#7c63d8" : "#fc6513"} strokeWidth="3" />
-      <circle cx={startX} cy="48" r="4" fill="#1b1b1f" />
-      <circle cx={endX} cy="48" r="4" fill="#1b1b1f" />
-      <text x={startX} y="72" textAnchor="middle" fontSize="10" fill="#1b1b1f">{visual.start}</text>
-      <text x={endX} y="72" textAnchor="middle" fontSize="10" fill="#1b1b1f">{visual.end}</text>
-      <text x={(startX + endX) / 2} y="24" textAnchor="middle" fontSize="10" fill="#5f5b57">
-        {visual.step > 0 ? `+${visual.step}` : visual.step}
-      </text>
-    </svg>
-  );
-}
-
-function buildGeneratedVisual(text: string, task: Task): GeneratedVisual {
-  const answer = parseAnswer(text);
-  const expression = text.match(/(\d+)\s*([+\-−x×*])\s*(\d+)/);
-
-  if (expression) {
-    const first = Number(expression[1]);
-    const operator = expression[2];
-    const second = Number(expression[3]);
-
-    if ((operator === "x" || operator === "×" || operator === "*") && first <= 12 && second <= 12) {
-      return { kind: "array", rows: first, columns: second };
-    }
-
-    if (operator === "+" || operator === "-" || operator === "−") {
-      const step = operator === "+" ? second : -second;
-      const computed = first + step;
-      if (answer !== null && answer !== computed) return null;
-      return { kind: "number-line", start: first, step, end: computed };
-    }
-  }
-
-  if (task.chapter === "counting" && answer !== null && answer > 0 && answer <= 40) {
-    return { kind: "dots", count: answer };
-  }
-
-  return null;
-}
-
-function parseAnswer(text: string) {
-  const answerMatch = text.match(/(?:answer|vastus)\s*:\s*(-?\d+)/i);
-  if (!answerMatch) return null;
-  return Number(answerMatch[1]);
-}
-
-function MessageBubble({ message, compact = false }: { message: ChatMessage; compact?: boolean }) {
+function MessageBubble({
+  message,
+  compact = false,
+  messageRef,
+}: {
+  message: ChatMessage;
+  compact?: boolean;
+  messageRef?: Ref<HTMLDivElement>;
+}) {
   const isUser = message.role === "user";
   const text = getMessageText(message.content);
   const image = getMessageImage(message.content);
+  const widthClass = compact
+    ? isUser ? "max-w-[21rem]" : "max-w-full"
+    : "max-w-[48rem]";
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div ref={messageRef} className={`scroll-mt-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`${compact ? "max-w-[20rem]" : "max-w-[48rem]"} rounded-2xl px-4 py-3 text-sm leading-6 ${
+        className={`${widthClass} text-sm leading-6 ${
           isUser
-            ? "bg-[#1b1b1f] text-white"
-            : "border border-[#eadfd4] bg-white text-[#1b1b1f]"
+            ? "rounded-2xl rounded-tr-md border border-[#d8ccff] bg-[#f7f3ff] px-4 py-3 text-[#2e245f]"
+            : "rounded-2xl rounded-tl-md border border-[#eadfd4] bg-[#fffaf4] px-4 py-3 text-[#1b1b1f] shadow-sm shadow-[#eadfd4]/40"
         }`}
       >
         {image && <img src={image} alt="" className="mb-3 max-h-56 rounded-xl object-contain" />}
         <MarkdownText text={text} />
       </div>
     </div>
+  );
+}
+
+function SendIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M10 15V5M10 5 6.5 8.5M10 5l3.5 3.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      className="h-4 w-4 shrink-0 text-[#b83f05] transition-transform group-open:rotate-180"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5.5 7.5 10 12l4.5-4.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

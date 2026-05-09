@@ -99,6 +99,7 @@ function strategyImageUrls(task: Task | null): string[] {
 export default function WorkbookPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [lang, setLang] = useState<"et" | "en">("et");
   const [showAnswer, setShowAnswer] = useState(false);
@@ -112,12 +113,24 @@ export default function WorkbookPage() {
     let ignore = false;
 
     async function loadWorkbook() {
-      const res = await fetch("/api/tasks?sort=workbook");
-      const data = await res.json();
-      if (!ignore) {
-        setTasks(data.tasks ?? []);
-        setSelectedIndex(0);
-        setLoading(false);
+      try {
+        const res = await fetch("/api/tasks?sort=workbook");
+        if (!res.ok) throw new Error("Workbook load failed");
+        const data = await res.json();
+        if (!ignore) {
+          setTasks(data.tasks ?? []);
+          setSelectedIndex(0);
+          setLoadFailed(false);
+        }
+      } catch {
+        if (!ignore) {
+          setTasks([]);
+          setLoadFailed(true);
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
       }
     }
 
@@ -202,6 +215,17 @@ export default function WorkbookPage() {
           <div className="h-[70vh] flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
+        ) : loadFailed ? (
+          <div className="mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 px-5 py-6 text-center text-amber-950">
+            <h2 className="text-base font-semibold">
+              {isEt ? "Töövihikut ei õnnestunud laadida" : "I could not load the workbook"}
+            </h2>
+            <p className="mt-2 text-sm leading-6">
+              {isEt
+                ? "Palun värskenda lehte või proovi hetke pärast uuesti."
+                : "Please refresh the page or try again in a moment."}
+            </p>
+          </div>
         ) : !selectedTask ? (
           <div className="text-center py-24 text-zinc-500">
             {isEt ? "Töövihiku ülesandeid ei leitud." : "No workbook tasks found."}
@@ -272,7 +296,7 @@ export default function WorkbookPage() {
                 <button
                   onClick={() => move(-1)}
                   disabled={!previousTask}
-                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-600 hover:bg-zinc-100 disabled:opacity-40 disabled:hover:bg-white"
+                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
                 >
                   ← {isEt ? "Eelmine" : "Previous"}
                 </button>
@@ -288,7 +312,7 @@ export default function WorkbookPage() {
                 <button
                   onClick={() => move(1)}
                   disabled={!nextTask}
-                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-600 hover:bg-zinc-100 disabled:opacity-40 disabled:hover:bg-white"
+                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-sm text-zinc-600 transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
                 >
                   {isEt ? "Järgmine" : "Next"} →
                 </button>

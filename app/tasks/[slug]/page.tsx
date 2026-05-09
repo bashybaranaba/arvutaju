@@ -148,10 +148,12 @@ function TaskPageInner({ slug }: { slug: string }) {
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [openStrategy, setOpenStrategy] = useState<number | null>(0);
 
   // Task image upload state
   const [imageUploading, setImageUploading] = useState(false);
+  const [taskImageNotice, setTaskImageNotice] = useState<string | null>(null);
   const taskImageInputRef = useRef<HTMLInputElement>(null);
 
   // Chat state
@@ -160,16 +162,28 @@ function TaskPageInner({ slug }: { slug: string }) {
   const [chatLoading, setChatLoading] = useState(false);
   const [chatImageUrl, setChatImageUrl] = useState<string | null>(null);
   const [chatImageUploading, setChatImageUploading] = useState(false);
+  const [chatNotice, setChatNotice] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatFileInputRef = useRef<HTMLInputElement>(null);
 
   const isEt = lang === "et";
+  const chatHasMeaningfulInput = chatInput.trim().length > 0;
+  const canSendChat = (chatHasMeaningfulInput || Boolean(chatImageUrl)) && !chatLoading && !chatImageUploading;
 
   useEffect(() => {
     fetch(`/api/tasks/${slug}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Task load failed");
+        return r.json();
+      })
       .then((d) => {
         setTask(d.task);
+        setLoadFailed(false);
+        setLoading(false);
+      })
+      .catch(() => {
+        setTask(null);
+        setLoadFailed(true);
         setLoading(false);
       });
   }, [slug]);
@@ -181,6 +195,7 @@ function TaskPageInner({ slug }: { slug: string }) {
   // Upload workbook image for this counting task
   const handleTaskImageUpload = async (file: File) => {
     setImageUploading(true);
+    setTaskImageNotice(null);
     try {
       const url = await uploadToCloudinary(file);
       // Save to MongoDB
@@ -192,6 +207,11 @@ function TaskPageInner({ slug }: { slug: string }) {
       setTask((t) => t ? { ...t, imageUrl: url } : t);
     } catch (e) {
       console.error("Image upload failed:", e);
+      setTaskImageNotice(
+        isEt
+          ? "Pilti ei õnnestunud üles laadida. Palun proovi uuesti."
+          : "I could not upload the image. Please try again.",
+      );
     } finally {
       setImageUploading(false);
     }
@@ -200,18 +220,33 @@ function TaskPageInner({ slug }: { slug: string }) {
   // Upload chat image to Cloudinary, then store URL (not base64)
   const handleChatImageFile = async (file: File) => {
     setChatImageUploading(true);
+    setChatNotice(null);
     try {
       const url = await uploadToCloudinary(file);
       setChatImageUrl(url);
     } catch (e) {
       console.error("Chat image upload failed:", e);
+      setChatNotice(
+        isEt
+          ? "Pilti ei õnnestunud lisada. Palun proovi uuesti või saada küsimus ilma pildita."
+          : "I could not add the image. Please try again or send the question without it.",
+      );
     } finally {
       setChatImageUploading(false);
     }
   };
 
   const sendMessage = async () => {
-    if ((!chatInput.trim() && !chatImageUrl) || chatLoading) return;
+    if (!chatInput.trim() && !chatImageUrl) {
+      setChatNotice(
+        isEt
+          ? "Kirjuta küsimus või lisa pilt enne saatmist."
+          : "Write a question or add an image before sending.",
+      );
+      return;
+    }
+    if (chatLoading || chatImageUploading) return;
+    setChatNotice(null);
 
     let userContent: ChatMessage["content"];
     if (chatImageUrl) {
@@ -282,7 +317,13 @@ function TaskPageInner({ slug }: { slug: string }) {
   if (!task) {
     return (
       <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center gap-4">
-        <p className="text-zinc-600">{isEt ? "Ülesannet ei leitud." : "Task not found."}</p>
+        <p className="text-zinc-600">
+          {loadFailed
+            ? isEt
+              ? "Ülesannet ei õnnestunud laadida. Palun proovi lehte värskendada."
+              : "I could not load this task. Please refresh the page and try again."
+            : isEt ? "Ülesannet ei leitud." : "Task not found."}
+        </p>
         <Link href="/" className="text-blue-600 hover:underline text-sm">
           ← {isEt ? "Tagasi" : "Back"}
         </Link>
@@ -446,6 +487,15 @@ function TaskPageInner({ slug }: { slug: string }) {
                   )}
                 </div>
 
+                {taskImageNotice && (
+                  <p
+                    className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+                    role="alert"
+                  >
+                    {taskImageNotice}
+                  </p>
+                )}
+
                 {task.answer && (
                   <details className="mt-4">
                     <summary className="text-sm text-zinc-500 cursor-pointer hover:text-zinc-700">
@@ -601,16 +651,27 @@ function TaskPageInner({ slug }: { slug: string }) {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite">
               {messages.length === 0 && (
-                <div className="text-center py-8 text-zinc-400">
-                  <p className="text-3xl mb-3">💬</p>
-                  <div className="flex flex-col gap-1.5">
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {isEt ? "Küsi õpetaja abiliselt" : "Ask the teacher assistant"}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">
+                    {isEt
+                      ? "Vali näidis või kirjuta oma küsimus. Vastus jääb selle ülesande konteksti."
+                      : "Choose a prompt or write your own question. The answer stays grounded in this task."}
+                  </p>
+                  <div className="mt-3 flex flex-col gap-1.5">
                     {suggestedPrompts.map((prompt) => (
                       <button
                         key={prompt}
-                        onClick={() => setChatInput(prompt)}
-                        className="text-xs text-blue-600 hover:bg-blue-50 rounded-lg px-3 py-1.5 transition-colors text-left"
+                        type="button"
+                        onClick={() => {
+                          setChatInput(prompt);
+                          setChatNotice(null);
+                        }}
+                        className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-left text-xs leading-5 text-blue-700 transition-colors hover:border-blue-200 hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       >
                         {prompt}
                       </button>
@@ -656,7 +717,11 @@ function TaskPageInner({ slug }: { slug: string }) {
             {(chatImageUrl || chatImageUploading) && (
               <div className="px-4 pb-2 flex items-center gap-2 shrink-0">
                 {chatImageUploading ? (
-                  <div className="h-14 w-14 rounded-xl border border-zinc-200 bg-zinc-50 flex items-center justify-center">
+                  <div
+                    className="h-14 w-14 rounded-xl border border-zinc-200 bg-zinc-50 flex items-center justify-center"
+                    role="status"
+                    aria-label={isEt ? "Pildi lisamine" : "Adding image"}
+                  >
                     <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : chatImageUrl ? (
@@ -664,27 +729,46 @@ function TaskPageInner({ slug }: { slug: string }) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={chatImageUrl}
-                      alt="Pending"
+                      alt={isEt ? "Lisatud pilt" : "Attached image"}
                       className="h-14 w-14 object-cover rounded-xl border border-zinc-200"
                     />
                     <button
+                      type="button"
                       onClick={() => setChatImageUrl(null)}
-                      className="text-xs text-zinc-400 hover:text-zinc-700"
+                      className="rounded-lg px-2 py-1 text-xs text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      aria-label={isEt ? "Eemalda pilt" : "Remove image"}
                     >
-                      ✕ {isEt ? "Eemalda" : "Remove"}
+                      {isEt ? "Eemalda pilt" : "Remove image"}
                     </button>
                   </>
                 ) : null}
               </div>
             )}
 
+            {chatNotice && (
+              <p
+                id="task-chat-status"
+                className="mx-4 mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900"
+                role="alert"
+              >
+                {chatNotice}
+              </p>
+            )}
+
             {/* Input row */}
-            <div className="border-t border-zinc-100 p-3 flex gap-2 items-end shrink-0">
+            <div className="border-t border-zinc-100 p-3 shrink-0">
+              <p id="task-chat-helper" className="mb-2 text-xs leading-5 text-zinc-500">
+                {canSendChat
+                  ? isEt ? "Valmis saatmiseks." : "Ready to send."
+                  : isEt ? "Kirjuta küsimus või lisa pilt." : "Write a question or add an image."}
+              </p>
+              <div className="flex gap-2 items-end">
               <input
                 type="file"
                 ref={chatFileInputRef}
                 accept="image/*"
                 className="hidden"
+                aria-label={isEt ? "Lisa pilt õpilastööst" : "Upload student work photo"}
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) handleChatImageFile(f);
@@ -692,35 +776,53 @@ function TaskPageInner({ slug }: { slug: string }) {
                 }}
               />
               <button
+                type="button"
                 onClick={() => chatFileInputRef.current?.click()}
                 disabled={chatLoading || chatImageUploading}
-                className="p-2.5 rounded-xl border border-zinc-200 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50 transition-colors disabled:opacity-50 shrink-0 text-base"
+                className="h-[42px] rounded-xl border border-zinc-200 px-3 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-wait disabled:bg-zinc-100 disabled:text-zinc-400 shrink-0"
                 title={isEt ? "Lisa pilt õpilastööst" : "Upload student work photo"}
+                aria-label={isEt ? "Lisa pilt õpilastööst" : "Upload student work photo"}
               >
-                📷
+                {isEt ? "Pilt" : "Image"}
               </button>
               <textarea
                 value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
+                onChange={(e) => {
+                  setChatInput(e.target.value);
+                  setChatNotice(null);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage();
+                    if (canSendChat) {
+                      void sendMessage();
+                    } else if (!chatInput.trim() && !chatImageUrl) {
+                      setChatNotice(
+                        isEt
+                          ? "Kirjuta küsimus või lisa pilt enne saatmist."
+                          : "Write a question or add an image before sending.",
+                      );
+                    }
                   }
                 }}
                 placeholder={isEt ? "Küsi küsimus..." : "Ask a question..."}
                 rows={1}
-                className="flex-1 px-3 py-2.5 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                aria-label={isEt ? "Küsi õpetaja abiliselt" : "Ask the teacher assistant"}
+                aria-describedby="task-chat-helper task-chat-status"
+                className="flex-1 px-3 py-2.5 rounded-xl border border-zinc-200 text-sm leading-5 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none disabled:cursor-wait disabled:bg-zinc-100"
                 disabled={chatLoading}
                 style={{ minHeight: "42px", maxHeight: "120px" }}
               />
               <button
+                type="button"
                 onClick={sendMessage}
-                disabled={chatLoading || (!chatInput.trim() && !chatImageUrl)}
-                className="p-2.5 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors shrink-0"
+                disabled={!canSendChat}
+                className="h-[42px] rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:hover:bg-zinc-200 shrink-0"
+                aria-label={canSendChat ? (isEt ? "Saada küsimus" : "Send question") : (isEt ? "Kirjuta küsimus või lisa pilt" : "Write a question or add an image")}
               >
-                →
+                {isEt ? "Saada" : "Send"}
               </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import PromptStartForm from "./components/PromptStartForm";
+import SiteHeader from "./components/SiteHeader";
 
 type Language = "et" | "en";
 
@@ -20,6 +22,7 @@ const landingCopy = {
     navLabel: "Põhinavigatsioon",
     homeLabel: "Arvutaju avaleht",
     languageLabel: "Keelevalik",
+    workbook: "Töövihik",
     methodology: "Põhimõtted",
     samples: "Töövoog",
     login: "Logi sisse",
@@ -30,12 +33,13 @@ const landingCopy = {
     subheading: "Valmista ülesandeid, mis avavad õpilaste mõtlemise ja strateegiad.",
     attachmentLabel: "Lisa manus",
     voiceLabel: "Häälsisend",
-    promptLabel: "Kirjelda arvutaju ülesannet",
-    promptPlaceholder: "Kirjelda, millist arvutaju ülesannet vajad…",
+    promptLabel: "Ülesande kirjeldus",
+    promptPlaceholder: "Sisesta klass, teema või õpilase lahendus...",
+    emptySubmitLabel: "Kirjuta lühike kirjeldus, et alustada.",
     promptChips: [
-      "5. klass · kümnendmurrud",
-      "Lahutamine arvteljel",
-      "Suunavad küsimused",
+      "Valmista arutelu 5. klassi kümnendmurdude kohta",
+      "Aita mul selgitada lahutamist arvteljel",
+      "Paku küsimusi, mis aitavad õpilastel oma mõtlemist selgitada",
     ],
     sampleEyebrow: "Klassiruumi töövoog",
     sampleHeading: "Valmis arutelu tunniks",
@@ -122,6 +126,7 @@ const landingCopy = {
     navLabel: "Primary navigation",
     homeLabel: "Arvutaju avaleht",
     languageLabel: "Language selection",
+    workbook: "Workbook",
     methodology: "Principles",
     samples: "Workflow",
     login: "Log in",
@@ -132,12 +137,13 @@ const landingCopy = {
     subheading: "Prepare tasks that reveal students' thinking and strategies.",
     attachmentLabel: "Add attachment",
     voiceLabel: "Voice input",
-    promptLabel: "Describe a number sense task",
-    promptPlaceholder: "Describe the number sense task you need…",
+    promptLabel: "Task prompt",
+    promptPlaceholder: "Enter a grade, topic, or student strategy...",
+    emptySubmitLabel: "Write a short description to get started.",
     promptChips: [
-      "Grade 5 · decimals",
-      "Subtraction on a number line",
-      "Guiding questions",
+      "Prepare a discussion for Grade 5 decimals",
+      "Help me explain subtraction on a number line",
+      "Suggest questions that help students explain their thinking",
     ],
     sampleEyebrow: "Classroom workflow",
     sampleHeading: "Ready for class discussion",
@@ -235,7 +241,7 @@ export default async function Home({
 
   return (
     <div lang={lang} className="min-h-screen bg-[#fffaf4] text-[#1b1b1f]">
-      <Header copy={copy} lang={lang} />
+      <SiteHeader lang={lang} />
 
       <main>
         <Hero copy={copy} lang={lang} />
@@ -254,69 +260,17 @@ function getLanguage(lang: PageSearchParams["lang"]): Language {
   return value === "en" ? "en" : "et";
 }
 
-function Header({ copy, lang }: { copy: LandingCopy; lang: Language }) {
-  return (
-    <header className="border-b border-[#eadfd4] bg-[#fffaf4]/92 backdrop-blur">
-      <nav
-        className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
-        aria-label={copy.navLabel}
-      >
-        <div className="flex items-center gap-8">
-          <Logo copy={copy} lang={lang} />
-          <div className="hidden items-center gap-6 text-sm font-medium text-[#5f5b57] md:flex">
-            <Link href="#metoodika" className="transition-colors hover:text-[#1b1b1f]">
-              {copy.methodology}
-            </Link>
-            <Link href="#toovoog" className="transition-colors hover:text-[#1b1b1f]">
-              {copy.samples}
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <LanguageToggle copy={copy} lang={lang} />
-          <button
-            type="button"
-            disabled
-            className="hidden cursor-not-allowed text-sm font-medium text-[#6c665f] md:inline-flex"
-            aria-label={copy.loginUnavailable}
-          >
-            {copy.login}
-          </button>
-          <ButtonLink href="#alusta" size="sm" className="hidden sm:inline-flex">
-            {copy.getStarted}
-          </ButtonLink>
-        </div>
-      </nav>
-    </header>
-  );
-}
-
 function Logo({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   return (
     <Link
       href={lang === "en" ? "/?lang=en" : "/"}
-      className="flex items-baseline text-2xl font-black leading-none tracking-[-0.04em] sm:text-[1.7rem]"
+      className="inline-flex h-10 -translate-y-[4px] items-center text-2xl font-black leading-none tracking-[-0.04em] sm:text-[1.7rem] [&>span]:leading-none"
       style={logoFontStyle}
       aria-label={copy.homeLabel}
     >
       <span className="text-[#1b1b1f]">arvu</span>
-      <span className="-mx-0.5 translate-y-[0.02em] text-[#fc6513]">+</span>
+      <span className="-mx-0.5 text-[#fc6513]">+</span>
       <span className="text-[#7c63d8]">aju</span>
-    </Link>
-  );
-}
-
-function LanguageToggle({ copy, lang }: { copy: LandingCopy; lang: Language }) {
-  const nextLang = lang === "et" ? "en" : "et";
-
-  return (
-    <Link
-      href={nextLang === "en" ? "/?lang=en" : "/"}
-      className="text-sm font-semibold uppercase text-[#5f5b57] transition-colors hover:text-[#1b1b1f]"
-      aria-label={copy.languageLabel}
-    >
-      {nextLang.toUpperCase()}
     </Link>
   );
 }
@@ -332,14 +286,6 @@ function Hero({ copy, lang }: { copy: LandingCopy; lang: Language }) {
           <p className="mx-auto mt-4 max-w-lg text-pretty text-lg leading-8 text-[#5f5b57]">
             {copy.subheading}
           </p>
-          <Link
-            href={lang === "en" ? "/workbook?lang=en" : "/workbook"}
-            className="mt-4 inline-flex text-sm font-medium text-blue-700 hover:text-blue-900"
-          >
-            {lang === "et"
-              ? "Liigu läbi töövihiku ülesanne ülesande haaval →"
-              : "Walk through the workbook task by task →"}
-          </Link>
         </div>
 
         <PromptPreview copy={copy} lang={lang} />
@@ -351,75 +297,19 @@ function Hero({ copy, lang }: { copy: LandingCopy; lang: Language }) {
 function PromptPreview({ copy, lang }: { copy: LandingCopy; lang: Language }) {
   return (
     <div id="alusta" className="mx-auto mt-10 max-w-3xl scroll-mt-8">
-      <form
-        action="/chat"
-        className="rounded-[2rem] border border-[#eadfd4] bg-white p-4 shadow-lg shadow-[#b09cf0]/10"
+      <PromptStartForm
+        lang={lang}
+        promptLabel={copy.promptLabel}
+        promptPlaceholder={copy.promptPlaceholder}
+        promptChips={copy.promptChips}
+        emptySubmitLabel={copy.emptySubmitLabel}
+        attachmentLabel={copy.attachmentLabel}
+        voiceLabel={copy.voiceLabel}
+        startLabel={copy.start}
       >
-        <input type="hidden" name="lang" value={lang} />
-        <label htmlFor="task-prompt" className="sr-only">
-          {copy.promptLabel}
-        </label>
-        <textarea
-          id="task-prompt"
-          name="prompt"
-          rows={3}
-          placeholder={copy.promptPlaceholder}
-          className="block min-h-24 w-full resize-none border-0 bg-transparent text-base leading-7 text-[#1b1b1f] outline-none placeholder:text-[#8a8179]"
-        />
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            disabled
-            className="flex h-9 w-9 shrink-0 cursor-not-allowed items-center justify-center rounded-full bg-[#fffaf4] text-xl leading-none text-[#5f5b57]"
-            aria-label={copy.attachmentLabel}
-          >
-            +
-          </button>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled
-              className="flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-full text-[#8a8179]"
-              aria-label={copy.voiceLabel}
-            >
-              <MicrophoneIcon />
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[#fc6513] px-3 text-sm font-medium text-white transition-colors hover:bg-[#e85a10] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b09cf0] focus-visible:ring-offset-2 sm:px-4"
-              aria-label={copy.start}
-            >
-              <span className="hidden sm:inline">{copy.start}</span>
-              <span aria-hidden="true">↑</span>
-            </button>
-          </div>
-        </div>
-      </form>
-      <div className="mt-3 flex flex-wrap justify-center gap-2">
-        {copy.promptChips.map((chip) => (
-          <QuickPrompt key={chip} lang={lang}>
-            {chip}
-          </QuickPrompt>
-        ))}
-      </div>
+        <MicrophoneIcon />
+      </PromptStartForm>
     </div>
-  );
-}
-
-function QuickPrompt({ children, lang }: { children: ReactNode; lang: Language }) {
-  const prompt = typeof children === "string" ? children : "";
-  const href = `/chat?lang=${lang}&prompt=${encodeURIComponent(prompt)}`;
-
-  return (
-    <Link
-      href={href}
-      className="inline-flex h-8 items-center gap-2 rounded-full border border-[#d8cdf9] bg-white/80 px-3 text-xs font-medium text-[#6a50d4] shadow-sm shadow-[#b09cf0]/10 transition-colors hover:border-[#b09cf0] hover:bg-white"
-    >
-      {children}
-      <span className="text-[#7c63d8]" aria-hidden="true">
-        ↑
-      </span>
-    </Link>
   );
 }
 
