@@ -1,4 +1,4 @@
-import Link from "next/link";
+import SiteHeader from "../components/SiteHeader";
 import TeacherAssistantFlow from "../components/TeacherAssistantFlow";
 
 type Language = "et" | "en";
@@ -8,11 +8,6 @@ type PageSearchParams = {
   prompt?: string | string[] | undefined;
 };
 
-const logoFontStyle = {
-  fontFamily:
-    '"Arial Rounded MT Bold", "Avenir Next Rounded", "Nunito Sans", var(--font-geist-sans), system-ui, sans-serif',
-} as const;
-
 export default async function ChatPage({
   searchParams,
 }: {
@@ -21,41 +16,14 @@ export default async function ChatPage({
   const params = await searchParams;
   const lang = getLanguage(params.lang);
   const prompt = getValue(params.prompt);
-  const isEt = lang === "et";
+  const languageHref = lang === "et" ? "/chat?lang=en" : "/chat";
+  const startHref = lang === "en" ? "/?lang=en#alusta" : "/#alusta";
 
   return (
-    <div lang={lang} className="min-h-screen bg-[#fffaf4] text-[#1b1b1f]">
-      <header className="border-b border-[#eadfd4] bg-[#fffaf4]/92 backdrop-blur">
-        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href={lang === "en" ? "/?lang=en" : "/"}
-            className="flex items-baseline text-2xl font-black leading-none tracking-[-0.04em] sm:text-[1.7rem]"
-            style={logoFontStyle}
-            aria-label="Arvutaju avaleht"
-          >
-            <span className="text-[#1b1b1f]">arvu</span>
-            <span className="-mx-0.5 translate-y-[0.02em] text-[#fc6513]">+</span>
-            <span className="text-[#7c63d8]">aju</span>
-          </Link>
+    <div lang={lang} className="min-h-screen bg-[#fffaf4] text-[#1b1b1f] lg:h-screen lg:overflow-hidden">
+      <SiteHeader lang={lang} languageHref={languageHref} startHref={startHref} />
 
-          <div className="flex items-center gap-4">
-            <Link
-              href="/workbook"
-              className="hidden text-sm font-medium text-[#5f5b57] transition-colors hover:text-[#1b1b1f] sm:inline"
-            >
-              {isEt ? "Töövihik" : "Workbook"}
-            </Link>
-            <Link
-              href={lang === "et" ? "/chat?lang=en" : "/chat"}
-              className="text-sm font-semibold uppercase text-[#5f5b57] transition-colors hover:text-[#1b1b1f]"
-            >
-              {lang === "et" ? "EN" : "ET"}
-            </Link>
-          </div>
-        </nav>
-      </header>
-
-      <main className="px-4 py-8 sm:px-6 lg:px-8">
+      <main className="px-4 py-5 sm:px-6 lg:h-[calc(100svh-4rem)] lg:overflow-hidden lg:p-0">
         <TeacherAssistantFlow lang={lang} initialPrompt={prompt} />
       </main>
     </div>
