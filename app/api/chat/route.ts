@@ -16,6 +16,34 @@ type ChatMessage = {
   content: string | ChatContentPart[];
 };
 
+type RetrievedTaskContext = {
+  slug: string;
+  title?: string;
+  titleEt?: string;
+  problem?: string;
+  problemEt?: string;
+  chapter?: string;
+  operation?: string;
+  gradeMin?: number;
+  gradeMax?: number;
+  difficulty?: string;
+  pageRef?: number;
+  workbookPart?: string;
+  sourcePageNumber?: number;
+  score?: number;
+  strategies?: Array<{
+    name?: string;
+    nameEt?: string;
+    description?: string;
+    descriptionEt?: string;
+    example?: string;
+  }>;
+  commonMisconceptions?: string[];
+  commonMisconceptionsEt?: string[];
+  facilitation?: string;
+  facilitationEt?: string;
+};
+
 type UploadedAttachment = {
   file: File;
   kind: "image" | "pdf" | "searchable";
@@ -83,29 +111,86 @@ const SEARCHABLE_EXTENSIONS = new Set([
   ".txt",
 ]);
 
-function buildSystemPrompt(task: ITask | null, lang: string): string {
+function formatRetrievedContext(contextTasks: RetrievedTaskContext[], isEt: boolean) {
+  if (contextTasks.length === 0) return "";
+
+  return contextTasks
+    .slice(0, 8)
+    .map((task, index) => {
+      const strategies = (task.strategies ?? [])
+        .slice(0, 4)
+        .map((strategy) => isEt ? strategy.nameEt ?? strategy.name : strategy.name ?? strategy.nameEt)
+        .filter(Boolean)
+        .join(", ");
+      const misconceptionList = isEt
+        ? task.commonMisconceptionsEt ?? task.commonMisconceptions ?? []
+        : task.commonMisconceptions ?? task.commonMisconceptionsEt ?? [];
+      const misconceptions = misconceptionList
+        ?.slice(0, 3)
+        .join("; ");
+
+      return [
+        `${index + 1}. ${isEt ? task.titleEt ?? task.title : task.title ?? task.titleEt}`,
+        `Problem: ${isEt ? task.problemEt ?? task.problem : task.problem ?? task.problemEt}`,
+        `Workbook reference: ${task.workbookPart ? `Part ${task.workbookPart}, ` : ""}page ${task.sourcePageNumber ?? task.pageRef ?? "unknown"}`,
+        `Operation/grades/difficulty: ${task.operation ?? task.chapter ?? "unknown"}, ${task.gradeMin ?? "?"}-${task.gradeMax ?? "?"}, ${task.difficulty ?? "unknown"}`,
+        strategies ? `Strategies: ${strategies}` : "",
+        misconceptions ? `Misconceptions: ${misconceptions}` : "",
+        typeof task.score === "number" ? `Retrieval score: ${task.score.toFixed(3)}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+    })
+    .join("\n\n");
+}
+
+function buildSystemPrompt(
+  task: ITask | null,
+  lang: string,
+  retrievedContext: RetrievedTaskContext[] = [],
+): string {
   const isEt = lang === "et";
 
   const base = isEt
     ? `Oled "Mõtlemine nähtavaks!" õpetaja abiline — AI-abimees, mis toetab õpetajaid Number Talks meetodi kasutamisel Eesti algklassides.
+Sinu peamine teadmisteallikas on "Mõtlemine nähtavaks!" töövihiku korpus:
+- I osa: nooremate klasside loendamine/subitiseerimine, liitmine ja lahutamine
+- II osa: vanemate algklasside liitmine, lahutamine, korrutamine ja jagamine, sh kümnendmurrud, harilikud murrud, raha ja mõõtühikud
+
 Sinu ülesanne on aidata õpetajatel:
 - mõista, milliseid strateegiaid õpilased kasutavad
 - diagnoosida levinud väärarusaamu
 - reageerida täpse ja toetava tagasisidega
 - analüüsida õpilastöid (kui õpetaja laadib pildi)
+- viidata töövihiku asjakohasele ülesandele, leheküljele ja strateegiale
+- eristada kindlat töövihiku materjali AI abil loodud uutest näidetest
+- toetada lühikest 10-15 minutit kestvat arutelu, kus õpetaja väärtustab eri vastuseid ja teeb õpilaste mõttekäigud nähtavaks
 
 Vasta alati eesti keeles, kasutades õpetajale sobilikku, sõbralikku ja professionaalset tooni.
 Kui õpetaja küsib inglise keeles, vasta inglise keeles.`
     : `You are the "Mõtlemine nähtavaks!" teacher assistant — an AI copilot supporting teachers using the Number Talks methodology in Estonian primary schools.
+Your primary source of truth is the "Mõtlemine nähtavaks!" workbook corpus:
+- Part I: early-grade counting/subitizing, addition, and subtraction
+- Part II: upper-primary addition, subtraction, multiplication, and division, including decimals, fractions, money, and measurement contexts
+
 Your role is to help teachers:
 - understand which strategies students are using
 - diagnose common misconceptions
 - respond with precise, supportive feedback
 - analyse student work from photos
+- point to the relevant workbook task, page, and strategy
+- distinguish verified workbook material from newly AI-generated examples
+- support a short 10-15 minute Number Talk routine where the teacher values multiple answers and makes student thinking visible
 
 Respond in the same language as the teacher's question (Estonian or English).`;
 
-  if (!task) return base;
+  const retrievedContextText = formatRetrievedContext(retrievedContext, isEt);
+
+  const retrievalInstructions = retrievedContextText
+    ? `\n\n---\n**Retrieved workbook examples visible in the workspace:**\n${retrievedContextText}\n---\n\nUse these retrieved workbook examples as the main evidence. If the teacher asks for tasks, offer the retrieved workbook tasks first, naming their title and workbook part/page. If you also create new examples, put them under a separate "AI-generated similar tasks" label. If several examples are shown, compare them briefly and explain why the selected one is most relevant. Refer to visible examples by title/page when useful. Never answer as if no workbook context exists when retrieved examples are provided.`
+    : "";
+
+  if (!task) return `${base}${retrievalInstructions}`;
 
   const isCountingTask = task.chapter === "counting";
 
@@ -145,7 +230,20 @@ ${task.facilitationEt}
 (EN: ${task.facilitation})
 ---
 
-Ground your responses in the above context. When a teacher describes or shows student work, map it to these known strategies or misconceptions. Be specific and pedagogically grounded. If an image is shared, analyse what strategies or misconceptions it reveals.`;
+Ground your responses in the above context. Start with the practical teacher answer, then name the workbook reference when useful. When a teacher describes or shows student work, map it to these known strategies or misconceptions. Be specific and pedagogically grounded. If an image is shared, analyse what strategies or misconceptions it reveals.
+
+Accuracy rules:
+- Do not invent workbook page numbers, strategy images, or visual diagrams.
+- Treat workbook tasks, pages, strategies, misconceptions, and source images as verified material.
+- When the teacher asks for tasks by operation/topic, start from the retrieved workbook tasks instead of generic invented contexts.
+- If the teacher asks for new similar content, generate text tasks and teacher moves, but say that strategy images should be reused from the verified workbook source or produced by a deterministic renderer.
+- Keep answers concise enough for classroom planning.
+Number Talk response shape:
+- Use short markdown with bold section labels.
+- Give the teacher a concrete next move first.
+- Name 2-3 likely student strategies or misconceptions from the workbook context.
+- Offer 2-3 discussion questions that invite explanation, comparison, and justification.
+- When helpful, suggest how the teacher can record the step-by-step thinking on the board without privileging one method as the only correct method.${retrievalInstructions}`;
 }
 
 function fileExtension(filename: string): string {
@@ -196,10 +294,20 @@ function sanitizeMessages(value: unknown): ChatMessage[] {
     }));
 }
 
+function sanitizeContextTasks(value: unknown): RetrievedTaskContext[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter((task): task is RetrievedTaskContext => {
+    if (!task || typeof task !== "object") return false;
+    return typeof (task as Partial<RetrievedTaskContext>).slug === "string";
+  });
+}
+
 async function parseChatRequest(request: NextRequest): Promise<{
   messages: ChatMessage[];
   taskSlug?: string;
   lang: string;
+  contextTasks: RetrievedTaskContext[];
   uploads: UploadedAttachment[];
 }> {
   const contentType = request.headers.get("content-type") ?? "";
@@ -207,11 +315,13 @@ async function parseChatRequest(request: NextRequest): Promise<{
   if (contentType.includes("multipart/form-data")) {
     const formData = await request.formData();
     let messages: ChatMessage[] = [];
+    let contextTasks: RetrievedTaskContext[] = [];
 
     try {
       messages = sanitizeMessages(JSON.parse(String(formData.get("messages") ?? "[]")));
+      contextTasks = sanitizeContextTasks(JSON.parse(String(formData.get("contextTasks") ?? "[]")));
     } catch {
-      throw new Error("Invalid messages JSON");
+      throw new Error("Invalid messages or contextTasks JSON");
     }
 
     const taskSlug = String(formData.get("taskSlug") ?? "") || undefined;
@@ -230,7 +340,7 @@ async function parseChatRequest(request: NextRequest): Promise<{
       return { file, kind: classifyUpload(file) };
     });
 
-    return { messages, taskSlug, lang, uploads };
+    return { messages, taskSlug, lang, contextTasks, uploads };
   }
 
   const body = await request.json();
@@ -238,6 +348,7 @@ async function parseChatRequest(request: NextRequest): Promise<{
     messages: sanitizeMessages(body.messages),
     taskSlug: typeof body.taskSlug === "string" ? body.taskSlug : undefined,
     lang: typeof body.lang === "string" ? body.lang : "et",
+    contextTasks: sanitizeContextTasks(body.contextTasks),
     uploads: [],
   };
 }
@@ -386,88 +497,96 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { messages, taskSlug, lang, uploads } = parsed;
-
-  let task: ITask | null = null;
-  if (taskSlug) {
-    await connectToDatabase();
-    task = await Task.findOne({ slug: taskSlug }).lean() as ITask | null;
-  }
-
-  const systemPrompt = buildSystemPrompt(task, lang);
-  const responseMessages = messages.map(toResponseMessage);
-  const directUploadNames = await addDirectUploadParts(responseMessages, uploads);
-  const { vectorStoreId, fileIds, filenames: searchableNames } = await createSearchStore(uploads);
-
-  if (searchableNames.length > 0) {
-    responseMessages.push({
-      role: "user",
-      content: [
-        {
-          type: "input_text",
-          text: `The following uploaded documents are indexed for file search: ${searchableNames.join(", ")}. Search them when they may contain relevant context for the teacher's question.`,
-        },
-      ],
-    });
-  }
-
-  if (directUploadNames.length > 0 || searchableNames.length > 0) {
-    responseMessages.push({
-      role: "user",
-      content: [
-        {
-          type: "input_text",
-          text: `Uploaded context available for this answer: ${[...directUploadNames, ...searchableNames].join(", ")}.`,
-        },
-      ],
-    });
-  }
-
-  let stream: AsyncIterable<{ type: string; delta?: string }>;
+  const { messages, taskSlug, lang, contextTasks, uploads } = parsed;
 
   try {
-    stream = (await openai.responses.create({
-      model: "gpt-4o",
-      instructions: systemPrompt,
-      input: responseMessages,
-      tools: vectorStoreId
-        ? [{ type: "file_search", vector_store_ids: [vectorStoreId], max_num_results: 8 }]
-        : undefined,
-      stream: true,
-      temperature: 0.4,
-      max_output_tokens: 1024,
-    } as Parameters<typeof openai.responses.create>[0])) as AsyncIterable<{
-      type: string;
-      delta?: string;
-    }>;
+    let task: ITask | null = null;
+    if (taskSlug) {
+      await connectToDatabase();
+      task = await Task.findOne({ slug: taskSlug }).lean() as ITask | null;
+    }
+
+    const systemPrompt = buildSystemPrompt(task, lang, contextTasks);
+    const responseMessages = messages.map(toResponseMessage);
+    const directUploadNames = await addDirectUploadParts(responseMessages, uploads);
+    const { vectorStoreId, fileIds, filenames: searchableNames } = await createSearchStore(uploads);
+
+    if (searchableNames.length > 0) {
+      responseMessages.push({
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `The following uploaded documents are indexed for file search: ${searchableNames.join(", ")}. Search them when they may contain relevant context for the teacher's question.`,
+          },
+        ],
+      });
+    }
+
+    if (directUploadNames.length > 0 || searchableNames.length > 0) {
+      responseMessages.push({
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `Uploaded context available for this answer: ${[...directUploadNames, ...searchableNames].join(", ")}.`,
+          },
+        ],
+      });
+    }
+
+    let stream: AsyncIterable<{ type: string; delta?: string }>;
+
+    try {
+      stream = (await openai.responses.create({
+        model: "gpt-4o",
+        instructions: systemPrompt,
+        input: responseMessages,
+        tools: vectorStoreId
+          ? [{ type: "file_search", vector_store_ids: [vectorStoreId], max_num_results: 8 }]
+          : undefined,
+        stream: true,
+        temperature: 0.4,
+        max_output_tokens: 1024,
+      } as Parameters<typeof openai.responses.create>[0])) as AsyncIterable<{
+        type: string;
+        delta?: string;
+      }>;
+    } catch (error) {
+      await cleanupOpenAIUploads(vectorStoreId, fileIds);
+      return Response.json(
+        { error: error instanceof Error ? error.message : "Chat response failed" },
+        { status: 500 }
+      );
+    }
+
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (event.type === "response.output_text.delta" && event.delta) {
+              controller.enqueue(encoder.encode(event.delta));
+            }
+          }
+        } finally {
+          await cleanupOpenAIUploads(vectorStoreId, fileIds);
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
   } catch (error) {
-    await cleanupOpenAIUploads(vectorStoreId, fileIds);
+    console.error("Chat route failed:", error);
     return Response.json(
-      { error: error instanceof Error ? error.message : "Chat response failed" },
-      { status: 500 }
+      { error: "Chat request failed" },
+      { status: 500 },
     );
   }
-
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    async start(controller) {
-      try {
-        for await (const event of stream) {
-          if (event.type === "response.output_text.delta" && event.delta) {
-            controller.enqueue(encoder.encode(event.delta));
-          }
-        }
-      } finally {
-        await cleanupOpenAIUploads(vectorStoreId, fileIds);
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(readable, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
 }

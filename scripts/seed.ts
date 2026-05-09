@@ -3,6 +3,7 @@ import path from "node:path";
 import mongoose from "mongoose";
 import OpenAI from "openai";
 import { tasks } from "./seed-data";
+import { workbookIITasks } from "./seed-data-part-ii";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
@@ -105,21 +106,33 @@ function loadGeneratedAssets(): Map<string, GeneratedTaskAsset> {
 }
 
 const generatedAssetsBySlug = loadGeneratedAssets();
+const seedTasks = [...tasks, ...workbookIITasks];
+type SeedTask = (typeof seedTasks)[number];
 
 function padPage(page: number): string {
   return page.toString().padStart(3, "0");
 }
 
-function withWorkbookMetadata(task: (typeof tasks)[number]) {
+function workbookTitleForPart(part: "I" | "II") {
+  return part === "I"
+    ? "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I"
+    : "Mõtlemine nähtavaks! Õpetaja juhendmaterjal II";
+}
+
+function withWorkbookMetadata(task: SeedTask) {
   const taskImageUrl = "imageUrl" in task ? task.imageUrl : undefined;
   const generatedAssets = generatedAssetsBySlug.get(task.slug);
-  const workbookPart = "I";
-  const workbookTitle = "Mõtlemine nähtavaks! Õpetaja juhendmaterjal I";
-  const sourcePdfName = "Õpetaja juhendmaterjal_pdf.pdf";
+  const workbookPart = generatedAssets?.workbookPart ?? ("workbookPart" in task ? task.workbookPart : "I");
+  const workbookTitle = workbookTitleForPart(workbookPart);
+  const sourcePdfName =
+    workbookPart === "I"
+      ? "Õpetaja juhendmaterjal_pdf.pdf"
+      : "Õpetaja juhendmaterjal_II.pdf";
   const sourcePageNumber = task.pageRef;
-  const sourcePdfPageNumber = sourcePageNumber ? sourcePageNumber + 3 : undefined;
+  const sourcePdfPageNumber =
+    workbookPart === "I" && sourcePageNumber ? sourcePageNumber + 3 : sourcePageNumber;
   const pageImageUrl = sourcePageNumber
-    ? `/images/workbooks/part-I/pages/page-${padPage(sourcePageNumber)}.png`
+    ? `/images/workbooks/part-${workbookPart === "I" ? "I" : "II"}/pages/page-${padPage(sourcePageNumber)}.png`
     : undefined;
 
   if (generatedAssets) {
@@ -179,7 +192,7 @@ function withWorkbookMetadata(task: (typeof tasks)[number]) {
   };
 }
 
-async function buildEmbeddingText(task: (typeof tasks)[number]): Promise<string> {
+async function buildEmbeddingText(task: SeedTask): Promise<string> {
   const strategyNames = task.strategies.map((s) => `${s.nameEt} (${s.name})`).join(", ");
   const strategyDescs = task.strategies
     .map((s) => `${s.nameEt}: ${s.descriptionEt}`)
@@ -228,7 +241,7 @@ async function seed() {
   let updated = 0;
   let errors = 0;
 
-  for (const task of tasks) {
+  for (const task of seedTasks) {
     try {
       process.stdout.write(`Processing: ${task.slug} ... `);
 

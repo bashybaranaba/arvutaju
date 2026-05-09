@@ -36,10 +36,10 @@ def main() -> int:
             part = task["workbookPart"]
             doc = docs[part]
             task_text = page_text(doc, task["pdfPage"])
-            if not (
-                task_text.startswith("Mitu ")
-                or task_text.startswith("Mis on tehte tulemus")
-                or "Mitu" in task_text[:140]
+            if (
+                not task_text
+                or task_text.startswith("Ülesande lahendusstrateegiaid")
+                or task_text.startswith("Õppesisust lähtuvad märksõnad")
             ):
                 errors.append(
                     f"{slug}: task page {task['page']} / PDF {task['pdfPage']} does not look like a task page: {task_text[:80]!r}"
@@ -55,9 +55,9 @@ def main() -> int:
                     errors.append(
                         f"{slug}: strategy page {strategy_page['page']} / PDF {strategy_page['pdfPage']} does not start with strategy heading"
                     )
-                if strategy_page["page"] <= task["page"]:
+                if strategy_page["pdfPage"] <= task["pdfPage"]:
                     errors.append(
-                        f"{slug}: strategy page {strategy_page['page']} is not after task page {task['page']}"
+                        f"{slug}: strategy PDF page {strategy_page['pdfPage']} is not after task PDF page {task['pdfPage']}"
                     )
 
             manifest_task = manifest_tasks.get(slug)
