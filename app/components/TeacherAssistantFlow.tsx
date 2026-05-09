@@ -8,11 +8,31 @@ type Language = "et" | "en";
 
 type ContentPart =
   | { type: "text"; text: string }
-  | { type: "image_url"; image_url: { url: string } };
+  | { type: "image_url"; image_url: { url: string } }
+  | { type: "file"; file: FilePreview };
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string | ContentPart[];
+};
+
+type FilePreview = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  previewUrl?: string;
+};
+
+type ChatAttachment = FilePreview & {
+  file: File;
+};
+
+type PendingUpload = {
+  name: string;
+  type: string;
+  lastModified: number;
+  dataUrl: string;
 };
 
 type Strategy = {
@@ -69,6 +89,9 @@ type Copy = {
   promptPlaceholder: string;
   promptHelper: string;
   attach: string;
+  removeFile: string;
+  fileReady: string;
+  filesReady: string;
   removeImage: string;
   imageReady: string;
   send: string;
@@ -97,8 +120,11 @@ type Copy = {
 const copyByLang: Record<Language, Copy> = {
   et: {
     promptPlaceholder: "Kirjelda teemat või õpilase lahendust...",
-    promptHelper: "Kirjuta küsimus või lisa pilt. Saata saab siis, kui sisend ei ole tühi.",
-    attach: "Lisa pilt",
+    promptHelper: "Kirjuta küsimus või lisa fail. Toetatud on pildid, PDF-id ja Wordi dokumendid.",
+    attach: "Lisa fail",
+    removeFile: "Eemalda fail",
+    fileReady: "Fail on lisatud.",
+    filesReady: "Failid on lisatud.",
     removeImage: "Eemalda pilt",
     imageReady: "Pilt on lisatud.",
     send: "Saada",
@@ -109,7 +135,7 @@ const copyByLang: Record<Language, Copy> = {
     contextError:
       "Töövihiku konteksti ei õnnestunud praegu leida. Võid siiski küsimuse saata.",
     generateError: "Sarnaste ülesannete loomine ei õnnestunud. Proovi hetke pärast uuesti.",
-    imageError: "Pilti ei õnnestunud lugeda. Proovi teist faili.",
+    imageError: "Faili ei õnnestunud lugeda. Proovi teist faili.",
     assistantTitle: "Vestlus",
     emptyTitle: "Proovi alustuseks",
     referencesTitle: "Töövihiku kontekst",
@@ -132,8 +158,11 @@ const copyByLang: Record<Language, Copy> = {
   },
   en: {
     promptPlaceholder: "Ask about a task or student strategy...",
-    promptHelper: "Write a question or attach an image. Send is available once there is something to review.",
-    attach: "Attach image",
+    promptHelper: "Write a question or attach a file. Images, PDFs, and Word documents are supported.",
+    attach: "Attach file",
+    removeFile: "Remove file",
+    fileReady: "File attached.",
+    filesReady: "Files attached.",
     removeImage: "Remove image",
     imageReady: "Image attached.",
     send: "Send",
@@ -144,7 +173,7 @@ const copyByLang: Record<Language, Copy> = {
     contextError:
       "I could not find workbook context just now. You can still send the question.",
     generateError: "I could not create similar tasks just now. Please try again in a moment.",
-    imageError: "I could not read that image. Please try another file.",
+    imageError: "I could not read that file. Please try another file.",
     assistantTitle: "Chat",
     emptyTitle: "Try asking",
     referencesTitle: "Workbook context",
@@ -179,7 +208,7 @@ export default function TeacherAssistantFlow({
   const copy = copyByLang[lang];
   const isEt = lang === "et";
   const [input, setInput] = useState("");
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -201,7 +230,7 @@ export default function TeacherAssistantFlow({
   const didSendInitialPrompt = useRef(false);
   const shouldScrollToSelectedTask = useRef(false);
   const hasMeaningfulInput = input.trim().length > 0;
-  const canSubmit = (hasMeaningfulInput || Boolean(imageDataUrl)) && !isThinking && !isSearching;
+  const canSubmit = (hasMeaningfulInput || attachments.length > 0) && !isThinking && !isSearching;
 
   const visibleMessages = useMemo(
     () => messages.filter((message) => getMessageText(message.content).trim()),
@@ -283,8 +312,8 @@ export default function TeacherAssistantFlow({
     }
   }, [copy.contextError]);
 
-  const sendPrompt = useCallback(async (promptText: string, promptImageDataUrl: string | null) => {
-    if (!promptText.trim() && !promptImageDataUrl) {
+  const sendPrompt = useCallback(async (promptText: string, promptAttachments: ChatAttachment[]) => {
+    if (!promptText.trim() && promptAttachments.length === 0) {
       setInputNotice(copy.emptyInput);
       return;
     }
@@ -294,7 +323,7 @@ export default function TeacherAssistantFlow({
     setInputNotice(null);
     setContextNotice(null);
     setIsSearching(true);
-    const contextTasks = await findContext(trimmed || (isEt ? "õpilase töö pilt" : "student work image"));
+    const contextTasks = await findContext(trimmed || (isEt ? "õpilase töö fail" : "student work file"));
     setIsSearching(false);
 
     const contextTask = contextTasks[0] ?? selectedTask;
@@ -303,27 +332,47 @@ export default function TeacherAssistantFlow({
       setSelectedTask(contextTask);
     }
 
-    const userContent = buildUserContent(trimmed, promptImageDataUrl, isEt);
+    const userContent = buildUserContent(trimmed, promptAttachments, isEt);
     const nextMessages = [...messages, { role: "user", content: userContent } satisfies ChatMessage];
 
     setMessages([...nextMessages, { role: "assistant", content: "" }]);
     setInput("");
-    setImageDataUrl(null);
+    setAttachments([]);
     setIsThinking(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const contextPayload = contextTasks.length > 0
+        ? contextTasks.slice(0, MAX_RETRIEVED_TASKS)
+        : tasks.slice(0, MAX_RETRIEVED_TASKS);
+      const apiMessages = messagesForApi(nextMessages);
+      const body = {
+        messages: apiMessages,
+        taskSlug: contextTask?.slug,
+        contextTasks: contextPayload,
+        lang,
+      };
+      const requestInit: RequestInit = {
         method: "POST",
         cache: "no-store",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: nextMessages,
-          taskSlug: contextTask?.slug,
-          contextTasks: contextTasks.length > 0
-            ? contextTasks.slice(0, MAX_RETRIEVED_TASKS)
-            : tasks.slice(0, MAX_RETRIEVED_TASKS),
-          lang,
-        }),
+      };
+
+      if (promptAttachments.length > 0) {
+        const formData = new FormData();
+        formData.append("messages", JSON.stringify(apiMessages));
+        if (contextTask?.slug) formData.append("taskSlug", contextTask.slug);
+        formData.append("contextTasks", JSON.stringify(contextPayload));
+        formData.append("lang", lang);
+        promptAttachments.forEach((attachment) => {
+          formData.append("files", attachment.file, attachment.name);
+        });
+        requestInit.body = formData;
+      } else {
+        requestInit.headers = { "Content-Type": "application/json" };
+        requestInit.body = JSON.stringify(body);
+      }
+
+      const response = await fetch("/api/chat", {
+        ...requestInit,
       });
 
       if (!response.ok || !response.body) throw new Error(`Chat failed: ${response.status}`);
@@ -346,9 +395,23 @@ export default function TeacherAssistantFlow({
   }, [copy.emptyInput, copy.error, findContext, isEt, isSearching, isThinking, lang, messages, selectedTask, tasks]);
 
   useEffect(() => {
+    if (didSendInitialPrompt.current) return;
+    const pending = consumePendingUploads();
+    if (!pending || pending.length === 0) return;
+
+    didSendInitialPrompt.current = true;
+    const pendingAttachments = pending.map((file) => createAttachment(file));
+    const timeout = window.setTimeout(() => {
+      void sendPrompt(initialPrompt, pendingAttachments);
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
+  }, [initialPrompt, sendPrompt]);
+
+  useEffect(() => {
     if (!initialPrompt || didSendInitialPrompt.current) return;
     didSendInitialPrompt.current = true;
-    void sendPrompt(initialPrompt, null);
+    void sendPrompt(initialPrompt, []);
   }, [initialPrompt, sendPrompt]);
 
   useEffect(() => {
@@ -395,12 +458,12 @@ export default function TeacherAssistantFlow({
   async function handleSubmit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const trimmed = input.trim();
-    if (!trimmed && !imageDataUrl) {
+    if (!trimmed && attachments.length === 0) {
       setInputNotice(copy.emptyInput);
       return;
     }
     if (isThinking || isSearching) return;
-    await sendPrompt(trimmed, imageDataUrl);
+    await sendPrompt(trimmed, attachments);
   }
 
   async function generateSimilarTasks() {
@@ -432,19 +495,23 @@ export default function TeacherAssistantFlow({
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setImageDataUrl(reader.result);
-        setInputNotice(null);
-      }
-    };
-    reader.onerror = () => setInputNotice(copy.imageError);
-    reader.readAsDataURL(file);
+    const nextAttachments = files.map(createAttachment);
+    setAttachments((current) => [...current, ...nextAttachments].slice(0, 6));
+    setInputNotice(null);
     event.target.value = "";
+  }
+
+  function removeAttachment(id: string) {
+    setAttachments((current) => {
+      const removed = current.find((attachment) => attachment.id === id);
+      if (removed?.previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(removed.previewUrl);
+      }
+      return current.filter((attachment) => attachment.id !== id);
+    });
   }
 
   return (
@@ -535,29 +602,23 @@ export default function TeacherAssistantFlow({
               {copy.promptPlaceholder}
             </label>
             <div className="rounded-2xl border border-[#eadfd4] bg-[#fffaf4] p-2.5 transition-colors focus-within:border-[#fc6513] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#ffd7bd] focus-within:ring-offset-2">
-              {imageDataUrl && (
-                <div className="mb-3 inline-flex items-start">
-                  <div className="relative">
-                    <img
-                      src={imageDataUrl}
-                      alt=""
-                      className="h-14 w-14 rounded-lg border border-[#eadfd4] bg-white object-cover"
+              {attachments.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {attachments.map((attachment) => (
+                    <AttachmentPreview
+                      key={attachment.id}
+                      attachment={attachment}
+                      removeLabel={attachment.previewUrl ? copy.removeImage : copy.removeFile}
+                      onRemove={() => removeAttachment(attachment.id)}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setImageDataUrl(null)}
-                      className="absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-semibold text-[#5f5b57] shadow-sm ring-1 ring-[#eadfd4] transition-colors hover:text-[#b83f05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd]"
-                      aria-label={copy.removeImage}
-                    >
-                      x
-                    </button>
-                  </div>
+                  ))}
                 </div>
               )}
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,.pdf,.doc,.docx,.txt,.md,.json,.pptx"
+                multiple
                 onChange={handleFileChange}
                 aria-label={copy.attach}
                 className="hidden"
@@ -783,6 +844,11 @@ function WorkbookMaterial({
   const primaryStrategyImage = strategyImages[0];
   const misconceptions = isEt ? task.commonMisconceptionsEt : task.commonMisconceptions;
   const [openDialog, setOpenDialog] = useState<"strategies" | "watch" | null>(null);
+  const [expandedImage, setExpandedImage] = useState<{
+    label: string;
+    image: { url: string; label?: string };
+    alt: string;
+  } | null>(null);
 
   return (
     <div className="space-y-4">
@@ -836,6 +902,12 @@ function WorkbookMaterial({
                 image={primaryImage}
                 alt={primaryImage?.label ?? (isEt ? task.titleEt : task.title)}
                 emptyText={isEt ? "Töövihiku pilti ei leitud." : "No workbook image found."}
+                expandLabel={isEt ? "Suurenda" : "Expand"}
+                onExpand={primaryImage ? () => setExpandedImage({
+                  label: isEt ? "Töövihiku ülesande pilt" : "Workbook task image",
+                  image: primaryImage,
+                  alt: primaryImage.label ?? (isEt ? task.titleEt : task.title),
+                }) : undefined}
               />
 
               <WorkbookImageCard
@@ -843,6 +915,12 @@ function WorkbookMaterial({
                 image={primaryStrategyImage}
                 alt={primaryStrategyImage?.label ?? (isEt ? task.titleEt : task.title)}
                 emptyText={isEt ? "Kontrollitud strateegiavisuaali ei leitud." : "No verified strategy visual found."}
+                expandLabel={isEt ? "Suurenda" : "Expand"}
+                onExpand={primaryStrategyImage ? () => setExpandedImage({
+                  label: isEt ? "Kontrollitud strateegiavisuaal" : "Verified strategy visual",
+                  image: primaryStrategyImage,
+                  alt: primaryStrategyImage.label ?? (isEt ? task.titleEt : task.title),
+                }) : undefined}
               />
             </div>
 
@@ -905,6 +983,16 @@ function WorkbookMaterial({
         </WorkbookDialog>
       )}
 
+      {expandedImage && (
+        <ImageExpandDialog
+          label={expandedImage.label}
+          image={expandedImage.image}
+          alt={expandedImage.alt}
+          closeLabel={isEt ? "Vähenda" : "Minimize"}
+          onClose={() => setExpandedImage(null)}
+        />
+      )}
+
       {generateNotice && (
         <div
           className="rounded-[1.25rem] border border-[#ffd7bd] bg-[#fff6ef] px-4 py-3 text-sm leading-6 text-[#8f3508]"
@@ -955,17 +1043,32 @@ function WorkbookImageCard({
   image,
   alt,
   emptyText,
+  expandLabel,
+  onExpand,
 }: {
   label: string;
   image?: { url: string; label?: string };
   alt: string;
   emptyText: string;
+  expandLabel?: string;
+  onExpand?: () => void;
 }) {
   return (
     <div className="grid h-[25rem] grid-rows-[1.25rem_minmax(0,1fr)] gap-2 rounded-xl border border-[#eadfd4] bg-white p-3">
-      <p className="truncate px-1 text-sm font-medium leading-5 text-[#6c665f]">
-        {label}
-      </p>
+      <div className="flex min-w-0 items-center justify-between gap-2 px-1">
+        <p className="truncate text-sm font-medium leading-5 text-[#6c665f]">
+          {label}
+        </p>
+        {image && onExpand && (
+          <button
+            type="button"
+            onClick={onExpand}
+            className="inline-flex h-6 shrink-0 items-center rounded-full border border-[#eadfd4] px-2 text-[0.68rem] font-semibold text-[#b83f05] transition-colors hover:border-[#fc6513] hover:text-[#1b1b1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2"
+          >
+            {expandLabel}
+          </button>
+        )}
+      </div>
       {image ? (
         <div className="flex min-h-0 items-center justify-center overflow-hidden rounded-lg bg-[#fffaf4]">
           <img
@@ -979,6 +1082,68 @@ function WorkbookImageCard({
           {emptyText}
         </div>
       )}
+    </div>
+  );
+}
+
+function ImageExpandDialog({
+  label,
+  image,
+  alt,
+  closeLabel,
+  onClose,
+}: {
+  label: string;
+  image: { url: string; label?: string };
+  alt: string;
+  closeLabel: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-[#1b1b1f]/95"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="expanded-workbook-image-title"
+    >
+      <div className="flex min-h-14 items-center justify-between gap-4 border-b border-white/10 bg-[#1b1b1f] px-4 py-3 text-white sm:px-6">
+        <div className="min-w-0">
+          <h2 id="expanded-workbook-image-title" className="truncate text-sm font-semibold">
+            {label}
+          </h2>
+          {image.label && (
+            <p className="mt-0.5 truncate text-xs text-white/60">{image.label}</p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex h-9 shrink-0 items-center rounded-full bg-white px-4 text-sm font-semibold text-[#1b1b1f] transition-colors hover:bg-[#fff0e7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1b1b1f]"
+        >
+          {closeLabel}
+        </button>
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="flex min-h-0 flex-1 cursor-zoom-out items-center justify-center p-3 sm:p-6"
+        aria-label={closeLabel}
+      >
+        <img
+          src={image.url}
+          alt={alt}
+          className="max-h-full max-w-full object-contain shadow-2xl shadow-black/30"
+        />
+      </button>
     </div>
   );
 }
@@ -1156,6 +1321,7 @@ function MessageBubble({
   const isUser = message.role === "user";
   const text = getMessageText(message.content);
   const image = getMessageImage(message.content);
+  const files = getMessageFiles(message.content);
   const widthClass = compact
     ? isUser ? "max-w-[21rem]" : "max-w-full"
     : "max-w-[48rem]";
@@ -1170,9 +1336,71 @@ function MessageBubble({
         }`}
       >
         {image && <img src={image} alt="" className="mb-3 max-h-56 rounded-xl object-contain" />}
+        {files.length > 0 && (
+          <div className="mb-3 grid gap-2">
+            {files.map((file) => (
+              <FileChip key={file.id} file={file} />
+            ))}
+          </div>
+        )}
         <MarkdownText text={text} />
       </div>
     </div>
+  );
+}
+
+function AttachmentPreview({
+  attachment,
+  removeLabel,
+  onRemove,
+}: {
+  attachment: FilePreview;
+  removeLabel: string;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="group relative max-w-full">
+      {attachment.previewUrl ? (
+        <img
+          src={attachment.previewUrl}
+          alt={attachment.name}
+          className="h-14 w-14 rounded-lg border border-[#eadfd4] bg-white object-cover"
+        />
+      ) : (
+        <FileChip file={attachment} compact />
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute -right-1.5 -top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-semibold text-[#5f5b57] shadow-sm ring-1 ring-[#eadfd4] transition-colors hover:text-[#b83f05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd7bd]"
+        aria-label={removeLabel}
+      >
+        x
+      </button>
+    </div>
+  );
+}
+
+function FileChip({ file, compact = false }: { file: FilePreview; compact?: boolean }) {
+  return (
+    <span
+      className={`inline-flex max-w-full items-center gap-2 rounded-lg border border-[#eadfd4] bg-white text-left text-[#5f5b57] ${
+        compact ? "min-h-14 max-w-56 px-3 py-2 pr-6" : "px-3 py-2"
+      }`}
+      title={`${file.name} (${formatFileSize(file.size)})`}
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#fff0e7] text-[0.65rem] font-bold uppercase text-[#b83f05]">
+        {getFileExtension(file.name).replace(".", "") || "file"}
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-xs font-semibold leading-4 text-[#1b1b1f]">
+          {file.name}
+        </span>
+        <span className="block text-[0.68rem] leading-4 text-[#8a8179]">
+          {formatFileSize(file.size)}
+        </span>
+      </span>
+    </span>
   );
 }
 
@@ -1267,12 +1495,67 @@ function renderInlineMarkdown(text: string) {
   });
 }
 
-function buildUserContent(text: string, imageDataUrl: string | null, isEt: boolean): ChatMessage["content"] {
-  if (!imageDataUrl) return text;
+function createAttachment(file: File): ChatAttachment {
+  return {
+    id: `${file.name}-${file.size}-${file.lastModified}-${crypto.randomUUID()}`,
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    previewUrl: file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
+    file,
+  };
+}
+
+function consumePendingUploads(): File[] | null {
+  const raw = sessionStorage.getItem("arvutaju.pendingChatFiles");
+  if (!raw) return null;
+  sessionStorage.removeItem("arvutaju.pendingChatFiles");
+
+  try {
+    const uploads = JSON.parse(raw) as PendingUpload[];
+    if (!Array.isArray(uploads)) return null;
+    return uploads.map(pendingUploadToFile);
+  } catch {
+    return null;
+  }
+}
+
+function pendingUploadToFile(upload: PendingUpload): File {
+  const [header, base64] = upload.dataUrl.split(",");
+  const mimeType = upload.type || header.match(/^data:([^;]+);base64$/)?.[1] || "application/octet-stream";
+  const binary = atob(base64 ?? "");
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new File([bytes], upload.name, {
+    type: mimeType,
+    lastModified: upload.lastModified,
+  });
+}
+
+function buildUserContent(text: string, attachments: ChatAttachment[], isEt: boolean): ChatMessage["content"] {
+  if (attachments.length === 0) return text;
 
   return [
-    { type: "text", text: text || (isEt ? "Palun analüüsi seda õpilase tööd." : "Please analyze this student work.") },
-    { type: "image_url", image_url: { url: imageDataUrl } },
+    { type: "text", text: text || (isEt ? "Palun analüüsi lisatud faili." : "Please analyze the attached file.") },
+    ...attachments.map((attachment) => {
+      if (attachment.previewUrl) {
+        return { type: "image_url" as const, image_url: { url: attachment.previewUrl } };
+      }
+
+      return {
+        type: "file" as const,
+        file: {
+          id: attachment.id,
+          name: attachment.name,
+          type: attachment.type,
+          size: attachment.size,
+        },
+      };
+    }),
   ];
 }
 
@@ -1287,6 +1570,41 @@ function getMessageText(content: ChatMessage["content"]): string {
 function getMessageImage(content: ChatMessage["content"]): string | null {
   if (typeof content === "string") return null;
   return content.find((part) => part.type === "image_url")?.image_url.url ?? null;
+}
+
+function getMessageFiles(content: ChatMessage["content"]): FilePreview[] {
+  if (typeof content === "string") return [];
+  return content
+    .filter((part): part is Extract<ContentPart, { type: "file" }> => part.type === "file")
+    .map((part) => part.file);
+}
+
+function messagesForApi(messages: ChatMessage[]): ChatMessage[] {
+  return messages.map((message) => {
+    if (typeof message.content === "string") return message;
+
+    const content = message.content.filter((part) => {
+      if (part.type === "file") return false;
+      if (part.type === "image_url" && part.image_url.url.startsWith("blob:")) return false;
+      return true;
+    });
+
+    return {
+      ...message,
+      content,
+    };
+  });
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getFileExtension(filename: string): string {
+  const dot = filename.lastIndexOf(".");
+  return dot >= 0 ? filename.slice(dot).toLowerCase() : "";
 }
 
 function getSourceImages(task: Task) {

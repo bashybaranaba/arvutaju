@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, type ReactNode, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
 
 type Language = "et" | "en";
 
@@ -28,12 +28,35 @@ export default function PromptStartForm({
   children,
 }: PromptStartFormProps) {
   const [prompt, setPrompt] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const hasMeaningfulPrompt = prompt.trim().length > 0;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const hasMeaningfulPrompt = prompt.trim().length > 0 || files.length > 0;
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     if (!hasMeaningfulPrompt) {
       event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    setFileError(null);
+
+    try {
+      if (files.length > 0) {
+        const pendingFiles = await Promise.all(files.map(fileToPendingUpload));
+        sessionStorage.setItem("arvutaju.pendingChatFiles", JSON.stringify(pendingFiles));
+      } else {
+        sessionStorage.removeItem("arvutaju.pendingChatFiles");
+      }
+
+      const params = new URLSearchParams();
+      if (lang === "en") params.set("lang", "en");
+      if (prompt.trim()) params.set("prompt", prompt.trim());
+      window.location.assign(`/chat${params.toString() ? `?${params.toString()}` : ""}`);
+    } catch {
+      setFileError(lang === "et" ? "Faili ei õnnestunud lisada." : "Could not attach that file.");
     }
   }
 
@@ -46,6 +69,18 @@ export default function PromptStartForm({
       textarea.focus();
       textarea.setSelectionRange(chip.length, chip.length);
     });
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const selectedFiles = Array.from(event.target.files ?? []);
+    if (selectedFiles.length === 0) return;
+    setFiles((current) => [...current, ...selectedFiles].slice(0, 6));
+    setFileError(null);
+    event.target.value = "";
+  }
+
+  function removeFile(fileToRemove: File) {
+    setFiles((current) => current.filter((file) => file !== fileToRemove));
   }
 
   return (
@@ -69,11 +104,45 @@ export default function PromptStartForm({
           placeholder={promptPlaceholder}
           className="block min-h-24 w-full resize-none border-0 bg-transparent text-base leading-7 text-[#1b1b1f] outline-none placeholder:text-[#8a8179]"
         />
+        {files.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {files.map((file) => (
+              <span
+                key={`${file.name}-${file.size}-${file.lastModified}`}
+                className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#eadfd4] bg-[#fffaf4] px-3 py-1.5 text-xs font-medium text-[#5f5b57]"
+              >
+                <span className="max-w-[12rem] truncate">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(file)}
+                  className="font-semibold text-[#b83f05] hover:text-[#1b1b1f] focus-visible:outline-none"
+                  aria-label={`${attachmentLabel}: ${file.name}`}
+                >
+                  x
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        {fileError && (
+          <p className="mt-3 rounded-lg border border-[#ffd7bd] bg-[#fff6ef] px-3 py-2 text-xs leading-5 text-[#8f3508]">
+            {fileError}
+          </p>
+        )}
         <div className="mt-4 flex items-center justify-between gap-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*,.pdf,.doc,.docx,.txt,.md,.json,.pptx"
+            onChange={handleFileChange}
+            className="hidden"
+            aria-label={attachmentLabel}
+          />
           <button
             type="button"
-            disabled
-            className="flex h-9 w-9 shrink-0 cursor-not-allowed items-center justify-center rounded-full bg-[#fffaf4] text-xl leading-none text-[#5f5b57]"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fffaf4] text-xl leading-none text-[#5f5b57] transition-colors hover:bg-[#fff0e7] hover:text-[#b83f05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b09cf0] focus-visible:ring-offset-2"
             aria-label={attachmentLabel}
           >
             +
@@ -113,4 +182,32 @@ export default function PromptStartForm({
       </div>
     </>
   );
+}
+
+type PendingUpload = {
+  name: string;
+  type: string;
+  lastModified: number;
+  dataUrl: string;
+};
+
+function fileToPendingUpload(file: File): Promise<PendingUpload> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        reject(new Error("Invalid file result"));
+        return;
+      }
+
+      resolve({
+        name: file.name,
+        type: file.type,
+        lastModified: file.lastModified,
+        dataUrl: reader.result,
+      });
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("File read failed"));
+    reader.readAsDataURL(file);
+  });
 }
